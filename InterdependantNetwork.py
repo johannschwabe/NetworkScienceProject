@@ -4,11 +4,11 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class InterdependantNetwork:
-    def __init__(self):
+    def __init__(self, nr_nodes_1, nr_nodes_2):
         self.graph_1 = None
         self.graph_2 = None
-        self.nr_nodes_1 = None
-        self.nr_nodes_2 = None
+        self.nr_nodes_1 = nr_nodes_1
+        self.nr_nodes_2 = nr_nodes_2
         self.interconnection = {}
         self.invalid_1 = set()
         self.invalid_2 = set()
