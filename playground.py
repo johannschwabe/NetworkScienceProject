@@ -1,6 +1,6 @@
 from Simulator import Simulator
-from InterdependantNetwork import InterdependantNetwork
+from RandomRegular import RandomRegular
 
-neti = InterdependantNetwork("ER", 20, 20)
-sim = Simulator(neti)
-sim.simulate()
+neti = RandomRegular(20, 20, 4, 4)
+neti.interconnect(20)
+neti.destroy_nodes(1, 1)
