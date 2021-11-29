@@ -61,12 +61,12 @@ class InterdependantNetwork:
         graph = nx.Graph()
 
         for node in self.graph_1.nodes():
-            graph.add_node(f"1_{node}", color="red")
+            graph.add_node(f"1_{node}")
         for edge in self.graph_1.edges():
             graph.add_edge(f"1_{edge[0]}", f"1_{edge[1]}")
 
         for node in self.graph_2.nodes():
-            graph.add_node(f"2_{node}", color="blue")
+            graph.add_node(f"2_{node}")
         for edge in self.graph_2.edges():
             graph.add_edge(f"2_{edge[0]}", f"2_{edge[1]}")
 
@@ -78,6 +78,13 @@ class InterdependantNetwork:
                     graph.add_edge(key, f"2_{target}")
 
         return graph
+
+    def plot_graph(self):
+        plt.figure()
+        G = self.interconnected_graph()
+        color_map = ["red" if node[:1] == "1" else "blue" for node in G]
+        nx.draw(G, node_color=color_map, with_labels=True)
+        plt.show()
 
     # Remove a node from a given graph.
     # Returns a set of nodes that were interconnected with the removed node and are now invalid
@@ -120,12 +127,13 @@ class InterdependantNetwork:
         for not_giant in g_2_not_giants:
             invalid_2 = invalid_2.union(not_giant)
 
-        plt.figure()
-        nx.draw(self.graph_1, with_labels=True)
-        plt.show()
+        # plt.figure()
+        # nx.draw(self.graph_1, with_labels=True)
+        # plt.show()
         # plt.figure()
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
+        self.plot_graph()
 
         # if no nodes are marked for removal, terminate. Else recurse
         if len(invalid_1.union(invalid_2)) > 0:
@@ -133,12 +141,14 @@ class InterdependantNetwork:
 
     # Destroy a given number of random nodes from each network
     def destroy_nodes(self, nodes_to_destroy_1, nodes_to_destroy_2):
-        plt.figure()
-        nx.draw(self.graph_1, with_labels=True)
-        plt.show()
+        # plt.figure()
+        # nx.draw(self.graph_1, with_labels=True)
+        # plt.show()
         # plt.figure()
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
+
+        self.plot_graph()
 
         shuffled_1 = list(range(self.nr_nodes_1))
         shuffled_2 = list(range(self.nr_nodes_2))
