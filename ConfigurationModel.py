@@ -9,3 +9,7 @@ class ConfigurationModel(InterdependantNetwork):
         sequence_2 = nx.random_powerlaw_tree_sequence(nr_nodes_2, gamma=gamma_2, tries=5000)
         self.graph_1 = nx.configuration_model(sequence_1)
         self.graph_2 = nx.configuration_model(sequence_2)
+
+    def __str__(self):
+        return "Configuration Model"
+

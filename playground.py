@@ -5,11 +5,10 @@ from RandomRegular import RandomRegular
 from ER import ER
 from ScaleFree import ScaleFree
 from ConfigurationModel import ConfigurationModel
+from Simulator import Simulator
 
-neti = ConfigurationModel(10, 10, 3, 3)
-# neti = ScaleFree(20, 20, 0.41, 0.41, 0.54, 0.54)
-# neti = ER(20, 20, 35, 35)
-# neti.interconnect_bidirectional(20)
-neti.interconnect_unidirectional(2, 2)
+simi = Simulator()
+print(simi.simulate())
 
-neti.destroy_nodes(1, 1)
+# scali = ScaleFree(1000, 1000, 3, 3, 4, 4)
+# scali.destroy_nodes(20, 20)

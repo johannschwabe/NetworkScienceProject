@@ -137,7 +137,7 @@ class InterdependantNetwork:
         # plt.figure()
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
-        self.plot_graph(invalid_1, invalid_2)
+        #self.plot_graph(invalid_1, invalid_2)
 
         # if no nodes are marked for removal, terminate. Else recurse
         if len(invalid_1.union(invalid_2)) > 0:
@@ -157,10 +157,16 @@ class InterdependantNetwork:
         shuffled_2 = list(range(self.nr_nodes_2))
         random.shuffle(shuffled_1)
         random.shuffle(shuffled_2)
-
         destroy_1 = shuffled_1[:nodes_to_destroy_1]
         destroy_2 = shuffled_2[:nodes_to_destroy_2]
 
-        self.plot_graph(destroy_1, destroy_2)
+        # self.plot_graph(destroy_1, destroy_2)
 
         self.cascade(destroy_1, destroy_2)
+
+    def clone(self):
+        new_network = InterdependantNetwork(self.nr_nodes_1, self.nr_nodes_2)
+        new_network.graph_1 = nx.Graph(self.graph_1)
+        new_network.graph_2 = nx.Graph(self.graph_2)
+        new_network.interconnection = self.interconnection
+        return new_network
