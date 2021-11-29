@@ -58,31 +58,31 @@ class InterdependantNetwork:
                 self.interconnection[key] = [connection_2[1]]
 
     def interconnected_graph(self):
-        graph = nx.Graph()
+        graph = nx.DiGraph()
 
-        for node in self.graph_1.nodes():
-            graph.add_node(f"1_{node}")
         for edge in self.graph_1.edges():
             graph.add_edge(f"1_{edge[0]}", f"1_{edge[1]}")
+            graph.add_edge(f"1_{edge[1]}", f"1_{edge[0]}")
 
-        for node in self.graph_2.nodes():
-            graph.add_node(f"2_{node}")
         for edge in self.graph_2.edges():
             graph.add_edge(f"2_{edge[0]}", f"2_{edge[1]}")
+            graph.add_edge(f"2_{edge[1]}", f"2_{edge[0]}")
 
         for key, val in self.interconnection.items():
             for target in val:
-                if key[:1] == 1:
-                    graph.add_edge(key, f"1_{target}")
-                else:
+                if key[:1] == "1":
                     graph.add_edge(key, f"2_{target}")
+                else:
+                    graph.add_edge(key, f"1_{target}")
 
         return graph
 
-    def plot_graph(self):
+    def plot_graph(self, invalid_1, invalid_2):
+        invalid_names_1 = [f"1_{node}" for node in invalid_1]
+        invalid_names_2 = [f"2_{node}" for node in invalid_2]
         plt.figure()
         G = self.interconnected_graph()
-        color_map = ["red" if node[:1] == "1" else "blue" for node in G]
+        color_map = ["pink" if node in invalid_names_1 else "palegreen" if node in invalid_names_2 else "red" if node[:1] == "1" else "limegreen" for node in G]
         nx.draw(G, node_color=color_map, with_labels=True)
         plt.show()
 
@@ -133,7 +133,7 @@ class InterdependantNetwork:
         # plt.figure()
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
-        self.plot_graph()
+        self.plot_graph(invalid_1, invalid_2)
 
         # if no nodes are marked for removal, terminate. Else recurse
         if len(invalid_1.union(invalid_2)) > 0:
@@ -148,10 +148,15 @@ class InterdependantNetwork:
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
 
-        self.plot_graph()
 
         shuffled_1 = list(range(self.nr_nodes_1))
         shuffled_2 = list(range(self.nr_nodes_2))
         random.shuffle(shuffled_1)
         random.shuffle(shuffled_2)
-        self.cascade(shuffled_1[:nodes_to_destroy_1], shuffled_2[:nodes_to_destroy_2])
+
+        destroy_1 = shuffled_1[:nodes_to_destroy_1]
+        destroy_2 = shuffled_2[:nodes_to_destroy_2]
+
+        self.plot_graph(destroy_1, destroy_2)
+
+        self.cascade(destroy_1, destroy_2)
