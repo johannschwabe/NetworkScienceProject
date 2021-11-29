@@ -1,6 +1,7 @@
 from InterdependantNetwork import InterdependantNetwork
 import networkx as nx
 
+
 class ConfigurationModel(InterdependantNetwork):
     def __init__(self, nr_nodes_1, nr_nodes_2, gamma_1, gamma_2):
         super().__init__(nr_nodes_1, nr_nodes_2)
