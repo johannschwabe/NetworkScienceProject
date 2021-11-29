@@ -86,7 +86,7 @@ class InterdependantNetwork:
         invalid_names_2 = [f"2_{node}" for node in invalid_2]
         plt.figure()
         G = self.interconnected_graph()
-        color_map = ["pink" if node in invalid_names_1 else "palegreen" if node in invalid_names_2 else "red" if node[:1] == "1" else "limegreen" for node in G]
+        color_map = ["pink" if node in invalid_names_1 else "aquamarine" if node in invalid_names_2 else "red" if node[:1] == "1" else "limegreen" for node in G]
         nx.draw(G, node_color=color_map, with_labels=True)
         plt.show()
 
