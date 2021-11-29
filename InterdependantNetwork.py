@@ -61,13 +61,13 @@ class InterdependantNetwork:
         graph = nx.DiGraph()
 
         for node in self.graph_1:
-            graph.add_node(node)
+            graph.add_node(f"1_{node}")
         for edge in self.graph_1.edges():
             graph.add_edge(f"1_{edge[0]}", f"1_{edge[1]}")
             graph.add_edge(f"1_{edge[1]}", f"1_{edge[0]}")
 
         for node in self.graph_2:
-            graph.add_node(node)
+            graph.add_node(f"2_{node}")
         for edge in self.graph_2.edges():
             graph.add_edge(f"2_{edge[0]}", f"2_{edge[1]}")
             graph.add_edge(f"2_{edge[1]}", f"2_{edge[0]}")
