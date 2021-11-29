@@ -21,7 +21,13 @@ class ScaleFree(InterdependantNetwork):
 
         self.graph_1 = nx.configuration_model(new_seq_1)
         self.graph_2 = nx.configuration_model(new_seq_2)
+        self.avg_1 = avg_1
+        self.avg_2 = avg_2
+        self.expo_1 = expo_1
+        self.expo_2 = expo_2
 
     def __str__(self):
-        return "Scale Free"
+        if self.avg_1 == self.avg_2:
+            return f"Scale Free: {self.expo_2}"
+        return f"Scale Free: {self.expo_1}, {self.expo_2}"
 

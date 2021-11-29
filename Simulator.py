@@ -9,7 +9,7 @@ from ScaleFree import ScaleFree
 class Simulator:
     def simulate(self):
         # nr_nodes = 50000
-        nr_nodes = 2000
+        nr_nodes = 1000
         average_degree = 4
         networks = [
             ER(nr_nodes, nr_nodes, average_degree/nr_nodes, average_degree/nr_nodes),
@@ -18,7 +18,7 @@ class Simulator:
             ScaleFree(nr_nodes, nr_nodes, 2.7, 2.7, average_degree, average_degree),
             ScaleFree(nr_nodes, nr_nodes, 2.3, 2.3, average_degree, average_degree),
                     ]
-        to_return = []
+        to_return = {}
         testrange = 0
         for neti in networks:
             neti.interconnect_bidirectional(nr_nodes)
@@ -30,10 +30,12 @@ class Simulator:
                 to_remove = int(((100 - i) / 100) * nr_nodes)
                 local_neti.destroy_nodes(to_remove, to_remove)
                 res.append((len(local_neti.graph_1.nodes) + len(local_neti.graph_2.nodes))/(nr_nodes * 2))
-            to_return.append(res)
+            to_return[str(neti)] = res
         plt.figure()
-        for netter in to_return:
-            plt.plot(range(testrange, 100), netter)
+        for neti_name, netter in to_return.items():
+            plt.plot(range(testrange, 100), netter, label=neti_name)
+        plt.legend()
         plt.show()
+
         return to_return
 
