@@ -9,6 +9,7 @@ class ScaleFree(InterdependantNetwork):
         super().__init__(nr_nodes)
         sequence = np.array(nx.utils.powerlaw_sequence(nr_nodes, expo))
         avg_deg = np.average(sequence)
+        # avg_deg = avg
         new_seq = np.array(np.round(sequence * avg/avg_deg), dtype=int)
         if np.sum(new_seq) % 2 == 1:
             new_seq[0] += 1
