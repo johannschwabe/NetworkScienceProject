@@ -1,12 +1,10 @@
 import matplotlib.pyplot as plt
 import os
 from ER import ER
-from InterdependantNetwork import InterdependantNetwork
 from RandomRegular import RandomRegular
 from ScaleFree import ScaleFree
 import numpy as np
 import networkx as nx
-import scipy as sp
 import random
 
 
@@ -41,23 +39,23 @@ class Simulator:
         nr_nodes = 10
         average_degree = 4
         networks = [
-            ER(nr_nodes, nr_nodes, average_degree/nr_nodes, average_degree/nr_nodes),
-            RandomRegular(nr_nodes, nr_nodes, average_degree, average_degree),
-            ScaleFree(nr_nodes, nr_nodes, 3.0, 3.0, average_degree, average_degree),
-            ScaleFree(nr_nodes, nr_nodes, 2.7, 2.7, average_degree, average_degree),
-            ScaleFree(nr_nodes, nr_nodes, 2.3, 2.3, average_degree, average_degree),
+            ER(nr_nodes, average_degree/nr_nodes),
+            RandomRegular(nr_nodes, average_degree),
+            ScaleFree(nr_nodes, 3.0, average_degree),
+            ScaleFree(nr_nodes, 2.7, average_degree),
+            ScaleFree(nr_nodes, 2.3, average_degree),
                     ]
         to_return = {}
         testrange = 0
         for neti in networks:
-            neti.interconnect_bidirectional(nr_nodes)
+            neti.interconnect_bidirectional()
 
             print(str(neti))
             res = []
             for i in range(testrange, 100):
                 local_neti = neti.clone()
                 to_remove = int(((100 - i) / 100) * nr_nodes)
-                local_neti.destroy_nodes(to_remove, to_remove)
+                local_neti.destroy_nodes(to_remove)
                 res.append((len(local_neti.graph_1.nodes) + len(local_neti.graph_2.nodes))/(nr_nodes * 2))
             to_return[str(neti)] = res
         plt.figure()
@@ -79,8 +77,8 @@ class Simulator:
                 for m in range(1, nr_of_runs):
                     if inter:
                         local_network = network.clone()
-                        nr_to_destroy = int(np.floor(local_network.nr_nodes_1 * (1 - 0.01 * p)))
-                        local_network.destroy_nodes(nr_to_destroy, nr_to_destroy)
+                        nr_to_destroy = int(np.floor(local_network.nr_nodes * (1 - 0.01 * p)))
+                        local_network.destroy_nodes(nr_to_destroy)
                         gc_exists_list.append(local_network.p_mu_n())
                     else:
                         local_network = nx.Graph(network)
@@ -142,8 +140,8 @@ class Simulator:
         # 1. Create interdependent Erdos Renyi networks
         er_networks = []
         for n in ns:
-            er_network = ER(n, n, self.er_average_degree / n, self.er_average_degree / n)
-            er_network.interconnect_bidirectional(n)
+            er_network = ER(n, self.er_average_degree / n)
+            er_network.interconnect_bidirectional()
             er_networks.append(er_network)
             self.er_inter_names.append("Interdependent ER Network " + str(self.er_average_degree) + " " + str(n))
 
@@ -169,7 +167,7 @@ class Simulator:
         for n in ns:
             er_network = nx.erdos_renyi_graph(n, self.er_average_degree / n)
             er_networks.append(er_network)
-            self.er_reg_names.append("Regular ER Network " + str( self.er_average_degree) + " " + str(n))
+            self.er_reg_names.append("Regular ER Network " + str(self.er_average_degree) + " " + str(n))
 
         # 3. Perform killing of nodes
         ps, networks_p_infinities = self.simulate_killing(er_networks, self.number_of_runs_er, inter=False)
@@ -203,25 +201,19 @@ class Simulator:
 
         # ER Network
         self.inter_networks.append(ER(self.n_part2,
-                                      self.n_part2,
-                                      self.average_degree_part2 / self.n_part2,
                                       self.average_degree_part2 / self.n_part2))
         self.names_part2.append("ER")
         # Random Regular Network
         self.inter_networks.append(RandomRegular(self.n_part2,
-                                                 self.n_part2,
-                                                 self.average_degree_part2,
                                                  self.average_degree_part2))
         self.names_part2.append("RR")
         # Scale Free Networks
         for lam in self.lambdas_part2:
-            self.inter_networks.append(ScaleFree(self.n_part2, self.n_part2,
-                                                 lam, lam,
-                                                 self.average_degree_part2, self.average_degree_part2))
+            self.inter_networks.append(ScaleFree(self.n_part2, lam, self.average_degree_part2))
             self.names_part2.append("SF lam = " + str(lam))
 
         for network in self.inter_networks:
-            network.interconnect_bidirectional(self.n_part2)
+            network.interconnect_bidirectional()
 
         # 2. Perform killing and calculate P infinity
         ps, networks_p_infinities = self.simulate_killing(self.inter_networks, self.number_of_runs_er)
