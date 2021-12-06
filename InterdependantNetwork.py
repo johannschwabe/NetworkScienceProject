@@ -170,3 +170,12 @@ class InterdependantNetwork:
         new_network.graph_2 = nx.Graph(self.graph_2)
         new_network.interconnection = self.interconnection
         return new_network
+
+    def p_mu_n(self):
+        connected_components = [len(c) for c in sorted(nx.connected_components(self.graph_1), key=len, reverse=True)]
+        if len(connected_components) > 0:
+            return connected_components[0] / self.nr_nodes_1
+        return 0
+
+
+
