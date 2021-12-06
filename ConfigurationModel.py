@@ -3,12 +3,11 @@ import networkx as nx
 
 
 class ConfigurationModel(InterdependantNetwork):
-    def __init__(self, nr_nodes_1, nr_nodes_2, gamma_1, gamma_2):
-        super().__init__(nr_nodes_1, nr_nodes_2)
-        sequence_1 = nx.random_powerlaw_tree_sequence(nr_nodes_1, gamma=gamma_1, tries=5000)
-        sequence_2 = nx.random_powerlaw_tree_sequence(nr_nodes_2, gamma=gamma_2, tries=5000)
-        self.graph_1 = nx.configuration_model(sequence_1)
-        self.graph_2 = nx.configuration_model(sequence_2)
+    def __init__(self, nr_nodes, gamma):
+        super().__init__(nr_nodes)
+        sequence = nx.random_powerlaw_tree_sequence(nr_nodes, gamma=gamma, tries=5000)
+        self.graph_1 = nx.configuration_model(sequence)
+        self.graph_2 = nx.configuration_model(sequence)
 
     def __str__(self):
         return "Configuration Model"

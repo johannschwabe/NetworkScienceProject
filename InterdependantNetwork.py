@@ -5,57 +5,29 @@ import matplotlib.pyplot as plt
 
 
 class InterdependantNetwork:
-    def __init__(self, nr_nodes_1, nr_nodes_2):
+    def __init__(self, nr_nodes):
         self.graph_1 = None
         self.graph_2 = None
-        self.nr_nodes_1 = nr_nodes_1
-        self.nr_nodes_2 = nr_nodes_2
-        self.interconnection = {}  # Dictionary with keys: {network_nr}_{node_nr} and values node_nr[]
+        self.graph_1_outgoing = {}
+        self.graph_2_outgoing = {}
+        self.nr_nodes = nr_nodes
 
     # generate "nr_connections" random interconnections between the two networks
-    def interconnect_bidirectional(self, nr_connections):
-        self.interconnection = {}  # Dictionary with keys: {network_nr}_{node_nr} and values node_nr[]
+    def interconnect_bidirectional(self):
+        for connection in range(self.nr_nodes):
+            self.graph_1_outgoing[connection] = connection
+            self.graph_2_outgoing[connection] = connection
 
-        interconnections = [(random.randrange(0, self.nr_nodes_1), random.randrange(0, self.nr_nodes_2)) for _ in
-                            range(nr_connections)]
+    def interconnect_unidirectional(self):
+        self.connect_graphs(self.graph_1_outgoing)
+        self.connect_graphs(self.graph_2_outgoing)
 
-        for connection in interconnections:
-            # Generated connections are bi-directional but are saved as uni-directional: each connection is added twice
-            key = f"1_{connection[0]}"
-            if key in self.interconnection:
-                self.interconnection[key].append(connection[1])
-            else:
-                self.interconnection[key] = [connection[1]]
-
-            key = f"2_{connection[1]}"
-            if key in self.interconnection:
-                self.interconnection[key].append(connection[0])
-            else:
-                self.interconnection[key] = [connection[0]]
-
-    def interconnect_unidirectional(self, nr_connections_1, nr_connections_2):
-        self.interconnection = {}  # Dictionary with keys: {network_nr}_{node_nr} and values node_nr[]
-
-        interconnections_1 = [(random.randrange(0, self.nr_nodes_1), random.randrange(0, self.nr_nodes_2)) for _ in
-                              range(nr_connections_1)]
-        interconnections_2 = [(random.randrange(0, self.nr_nodes_2), random.randrange(0, self.nr_nodes_1)) for _ in
-                              range(nr_connections_2)]
-
-        for connection_1 in interconnections_1:
-            # Generated connections are uni-directional
-            key = f"1_{connection_1[0]}"
-            if key in self.interconnection:
-                self.interconnection[key].append(connection_1[1])
-            else:
-                self.interconnection[key] = [connection_1[1]]
-
-        for connection_2 in interconnections_2:
-            # Generated connections are uni-directional
-            key = f"2_{connection_2[0]}"
-            if key in self.interconnection:
-                self.interconnection[key].append(connection_2[1])
-            else:
-                self.interconnection[key] = [connection_2[1]]
+    def connect_graphs(self, outgoing):
+        for connection in range(self.nr_nodes):
+            rnd_node = random.randrange(self.nr_nodes)
+            while rnd_node in outgoing.values():
+                rnd_node = random.randrange(self.nr_nodes)
+            outgoing[connection] = rnd_node
 
     def interconnected_graph(self):
         graph = nx.DiGraph()
@@ -72,12 +44,11 @@ class InterdependantNetwork:
             graph.add_edge(f"2_{edge[0]}", f"2_{edge[1]}")
             graph.add_edge(f"2_{edge[1]}", f"2_{edge[0]}")
 
-        for key, val in self.interconnection.items():
-            for target in val:
-                if key[:1] == "1":
-                    graph.add_edge(key, f"2_{target}")
-                else:
-                    graph.add_edge(key, f"1_{target}")
+        for key, val in self.graph_1_outgoing.items():
+            graph.add_edge(f"1_{key}", f"2_{val}")
+
+        for key, val in self.graph_2_outgoing.items():
+            graph.add_edge(f"2_{key}", f"1_{val}")
 
         return graph
 
@@ -86,26 +57,31 @@ class InterdependantNetwork:
         invalid_names_2 = [f"2_{node}" for node in invalid_2]
         plt.figure()
         G = self.interconnected_graph()
-        color_map = ["pink" if node in invalid_names_1 else "aquamarine" if node in invalid_names_2 else "red" if node[:1] == "1" else "limegreen" for node in G]
+        color_map = ["pink" if node in invalid_names_1 else "aquamarine" if node in invalid_names_2 else "red" if node[
+                                                                                                                  :1] == "1" else "limegreen"
+                     for node in G]
         nx.draw(G, node_color=color_map, with_labels=True)
         plt.show()
 
     # Remove a node from a given graph.
     # Returns a set of nodes that were interconnected with the removed node and are now invalid
     def destroy_node(self, node, network_nr):
-        current_neti, other_neti = (self.graph_1, self.graph_2) if network_nr == 1 else (self.graph_2, self.graph_1)
-        # Remove all edges
-        current_neti.remove_node(node)
-        # current_neti.add_node(node)
+        current_neti, other_neti, current_out, other_out = \
+            (self.graph_1, self.graph_2, self.graph_1_outgoing, self.graph_2_outgoing) \
+            if network_nr == 1 else \
+            (self.graph_2, self.graph_1, self.graph_2_outgoing, self.graph_2_outgoing)
+
+        if node in current_neti:
+            current_neti.remove_node(node)
+
         # Remove interconnections
-        for key, value in self.interconnection.items():
-            if node in value and key[:1] != f"{network_nr}":
-                while node in value:
-                    value.remove(node)
-        key = f"{network_nr}_{node}"
-        if key in self.interconnection:
-            return set(self.interconnection.pop(key))
-        return set([])
+        for key, value in other_out.items():
+            if node == value:
+                other_out.pop(key)
+                break
+        if node in current_out:
+            return current_out.pop(node)
+        return None
 
     # Recursively removes nodes until a stable state is reached
     def cascade(self, kill_list_1, kill_list_2):
@@ -114,9 +90,13 @@ class InterdependantNetwork:
 
         # Remove previously marked nodes
         for random_node in kill_list_1:
-            invalid_2 = invalid_2.union(self.destroy_node(random_node, 1))
+            invalid = self.destroy_node(random_node, 1)
+            if invalid is not None:
+                invalid_2.add(invalid)
         for random_node in kill_list_2:
-            invalid_1 = invalid_1.union(self.destroy_node(random_node, 2))
+            invalid = self.destroy_node(random_node, 2)
+            if invalid is not None:
+                invalid_1.add(invalid)
 
         # Make shure that nodes removed this round aren't falsy removed again next round
         invalid_1 = invalid_1.difference(kill_list_1)
@@ -137,14 +117,14 @@ class InterdependantNetwork:
         # plt.figure()
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
-        #self.plot_graph(invalid_1, invalid_2)
+        # self.plot_graph(invalid_1, invalid_2)
 
         # if no nodes are marked for removal, terminate. Else recurse
         if len(invalid_1.union(invalid_2)) > 0:
             self.cascade(invalid_1, invalid_2)
 
     # Destroy a given number of random nodes from each network
-    def destroy_nodes(self, nodes_to_destroy_1, nodes_to_destroy_2):
+    def destroy_nodes(self, nodes_to_destroy):
         # plt.figure()
         # nx.draw(self.graph_1, with_labels=True)
         # plt.show()
@@ -152,30 +132,22 @@ class InterdependantNetwork:
         # nx.draw(self.graph_2, with_labels=True)
         # plt.show()
 
+        shuffled = list(range(self.nr_nodes))
+        random.shuffle(shuffled)
+        destroy = shuffled[:nodes_to_destroy]
 
-        shuffled_1 = list(range(self.nr_nodes_1))
-        shuffled_2 = list(range(self.nr_nodes_2))
-        random.shuffle(shuffled_1)
-        random.shuffle(shuffled_2)
-        destroy_1 = shuffled_1[:nodes_to_destroy_1]
-        destroy_2 = shuffled_2[:nodes_to_destroy_2]
-
-        # self.plot_graph(destroy_1, destroy_2)
-
-        self.cascade(destroy_1, destroy_2)
+        self.cascade(destroy, [])
 
     def clone(self):
-        new_network = InterdependantNetwork(self.nr_nodes_1, self.nr_nodes_2)
+        new_network = InterdependantNetwork(self.nr_nodes)
         new_network.graph_1 = nx.Graph(self.graph_1)
         new_network.graph_2 = nx.Graph(self.graph_2)
-        new_network.interconnection = self.interconnection
+        new_network.graph_1_outgoing = self.graph_1_outgoing.copy()
+        new_network.graph_2_outgoing = self.graph_2_outgoing.copy()
         return new_network
 
     def p_mu_n(self):
         connected_components = [len(c) for c in sorted(nx.connected_components(self.graph_1), key=len, reverse=True)]
         if len(connected_components) > 0:
-            return connected_components[0] / self.nr_nodes_1
+            return connected_components[0] / self.nr_nodes
         return 0
-
-
-
