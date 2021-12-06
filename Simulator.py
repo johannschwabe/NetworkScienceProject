@@ -15,7 +15,7 @@ class Simulator:
     def __init__(self):
         # params er analysis
         self.number_of_ns = 2
-        self.number_of_runs_er = 100
+        self.number_of_runs_er = 50
         self.er_average_degree = 4
         self.er_inter_names = []
         self.er_reg_names = []
@@ -29,7 +29,7 @@ class Simulator:
         self.inter_networks = []
         self.names_part2 = []
         self.reg_networks = []
-        self.n_part2 = 2000
+        self.n_part2 = 1000
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
 
@@ -72,9 +72,12 @@ class Simulator:
         ps = []
         networks_p_infinities = []
         for network in networks:
+            print(str(network))
             p_infinities = []
             pss = []
             for p in range(1, 100):
+                if p % 10 == 0:
+                    print(p, end=", ")
                 gc_exists_list = []
                 for m in range(1, nr_of_runs):
                     if inter:
