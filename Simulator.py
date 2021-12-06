@@ -13,7 +13,8 @@ class Simulator:
     def __init__(self):
         # params er analysis
         self.number_of_ns = 2
-        self.number_of_runs_er = 25
+        self.number_of_runs_er = 3
+        self.start_n = 10
         self.er_average_degree = 4
         self.er_inter_names = []
         self.er_reg_names = []
@@ -107,19 +108,22 @@ class Simulator:
         ns = []
         # Ns from paper 1000, 2000, 4000 ... 64 000
         for i in range(0, self.number_of_ns):
-            ns.append(2**i * 10)
+            ns.append(2**i * self.start_n)
         self.ns = ns
 
         # 1. Create interdependent Erdos Renyi networks
-        er_networks = []
-        for n in ns:
-            er_network = ER(n, self.er_average_degree / n)
-            er_network.interconnect_bidirectional()
-            er_networks.append(er_network)
-            self.er_inter_names.append("Interdependent ER Network " + str(self.er_average_degree) + " " + str(n))
+        self.p_infinities_inter_er = np.empty([1, 99])
+        for i in range(self.number_of_runs_er):
+            er_networks = []
+            for n in ns:
+                er_network = ER(n, self.er_average_degree / n)
+                er_network.interconnect_bidirectional()
+                er_networks.append(er_network)
+                self.er_inter_names.append("Interdependent ER Network " + str(self.er_average_degree) + " " + str(n))
 
-        # 2. Perform cascading failure M times for increasing p to calculate pInfinity
-        ps, networks_p_infinities = self.simulate_killing(er_networks, self.number_of_runs_er)
+            # 2. Perform cascading failure M times for increasing p to calculate pInfinity
+            ps, networks_p_infinities_n = self.simulate_killing(er_networks, self.number_of_runs_er)
+            np.vstack([self.p_infinities_inter_er, networks_p_infinities_n])
 
         # 2.2 make ps to psk
         psk = []
@@ -127,31 +131,35 @@ class Simulator:
             psk.append([element * self.er_average_degree*0.01 for element in pss])
 
         # 3. Draw scatter plot
-        self.plot_pk_infinity(psk, networks_p_infinities, "Comparison interdependent ER with different N")
+        self.plot_pk_infinity(psk, self.p_infinities_inter_er, "Comparison interdependent ER with different N")
 
     def analyse_regular_er_augmenting_n(self):
         ns = []
         # Ns from paper 1000, 2000, 4000 ... 64 000
         for i in range(self.number_of_ns):
-            ns.append(2 ** i * 10)
+            ns.append(2 ** i * self.start_n)
 
-        # 1. Create regular Erdos Renyi networks
-        er_networks = []
-        for n in ns:
-            er_network = nx.erdos_renyi_graph(n, self.er_average_degree / n)
-            er_networks.append(er_network)
-            self.er_reg_names.append("Regular ER Network " + str(self.er_average_degree) + " " + str(n))
+        self.p_infinities_inter_er = np.empty([1, 99])
 
-        # 3. Perform killing of nodes
-        ps, networks_p_infinities = self.simulate_killing(er_networks, self.number_of_runs_er, inter=False)
+        for i in range(self.number_of_runs_er):
+            # 1. Create regular Erdos Renyi networks
+            er_networks = []
+            for n in ns:
+                er_network = nx.erdos_renyi_graph(n, self.er_average_degree / n)
+                er_networks.append(er_network)
+                self.er_reg_names.append("Regular ER Network " + str(self.er_average_degree) + " " + str(n))
+
+            # 3. Perform killing of nodes
+            ps_n, networks_p_infinities_n = self.simulate_killing(er_networks, self.number_of_runs_er, inter=False)
+            np.vstack([self.p_infinities_inter_er, networks_p_infinities_n])
 
         # 3.2 make ps to psk
         self.psk = []
-        for pss in ps:
+        for pss in ps_n:
             self.psk.append([element * self.er_average_degree * 0.01 for element in pss])
 
         # 4. Draw scatter plot
-        self.plot_pk_infinity(self.psk, networks_p_infinities, "Comparison regular ER with different N")
+        self.plot_pk_infinity(self.psk, self.p_infinities_inter_er, "Comparison regular ER with different N")
 
     def compare_regular_interdependent_er(self):
         for p_inf_inter_er, p_inf_reg_er, pss, name, n in zip(self.p_infinities_inter_er, self.p_infinities_reg_er, self.psk, self.er_inter_names, self.ns):
@@ -236,3 +244,8 @@ class Simulator:
             directory = os.path.dirname(__file__)
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
+
+
+sim = Simulator()
+sim.analyse_interdependent_er_augmenting_n()
+sim.analyse_regular_er_augmenting_n()
