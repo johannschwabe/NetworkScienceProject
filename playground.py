@@ -7,8 +7,8 @@ from ScaleFree import ScaleFree
 from ConfigurationModel import ConfigurationModel
 from Simulator import Simulator
 
-simi = Simulator()
-print(simi.simulate())
+# simi = Simulator()
+# print(simi.sim())
 
 # scali = ScaleFree(1000, 1000, 3, 3, 4, 4)
 # scali.destroy_nodes(20, 20)
