@@ -13,7 +13,7 @@ class Simulator:
     def __init__(self):
         # params er analysis
         self.number_of_ns = 2
-        self.number_of_runs_er = 10
+        self.number_of_runs_er = 100
         self.er_average_degree = 4
         self.er_inter_names = []
         self.er_reg_names = []
@@ -27,7 +27,7 @@ class Simulator:
         self.inter_networks = []
         self.names_part2 = []
         self.reg_networks = []
-        self.n_part2 = 50
+        self.n_part2 = 2000
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
 
@@ -36,7 +36,7 @@ class Simulator:
 
     def simulate(self):
         # nr_nodes = 50000
-        nr_nodes = 10
+        nr_nodes = 2000
         average_degree = 4
         networks = [
             ER(nr_nodes, average_degree/nr_nodes),
@@ -238,7 +238,7 @@ class Simulator:
         for lam in self.lambdas_part2:
             sequence1 = nx.utils.powerlaw_sequence(self.n_part2, lam)
             avg = np.average(sequence1)
-            new_seq_1 = np.array(np.round(sequence1 * self.average_degree_part2 / avg), dtype=int)
+            new_seq_1 = np.array(np.round(np.array(sequence1) * self.average_degree_part2 / avg), dtype=int)
             if np.sum(new_seq_1) % 2 == 1:
                 new_seq_1[0] += 1
             self.reg_networks.append(nx.configuration_model(new_seq_1))
