@@ -13,8 +13,8 @@ class Simulator:
     def __init__(self):
         # params er analysis
         self.number_of_ns = 2
-        self.number_of_runs_er = 3
-        self.start_n = 10
+        self.number_of_runs_er = 10
+        self.start_n = 500
         self.er_average_degree = 4
         self.er_inter_names = []
         self.er_reg_names = []
@@ -43,7 +43,8 @@ class Simulator:
             print("\n"+str(network))
             p_infinities = []
             pss = []
-            for p in range(5, 100):
+
+            for p in np.arange(55, 90, 0.5):
                 if p % 10 == 0:
                     print(p, end=", ")
                 gc_exists_list = []
@@ -114,6 +115,7 @@ class Simulator:
         # 1. Create interdependent Erdos Renyi networks
         self.p_infinities_inter_er = np.empty([1, 99])
         for i in range(self.number_of_runs_er):
+            print("--- Round: " + str(i) + " ---")
             er_networks = []
             for n in ns:
                 er_network = ER(n, self.er_average_degree / n)
