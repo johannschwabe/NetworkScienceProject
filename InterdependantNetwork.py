@@ -146,8 +146,8 @@ class InterdependantNetwork:
         new_network.graph_2_outgoing = self.graph_2_outgoing.copy()
         return new_network
 
-    def p_mu_n(self):
+    def p_mu_n(self, reduced_size):
         connected_components = [len(c) for c in sorted(nx.connected_components(self.graph_1), key=len, reverse=True)]
         if len(connected_components) > 0:
-            return connected_components[0] / self.nr_nodes
+            return connected_components[0] / reduced_size
         return 0

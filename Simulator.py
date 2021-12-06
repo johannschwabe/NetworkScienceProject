@@ -13,7 +13,7 @@ class Simulator:
     def __init__(self):
         # params er analysis
         self.number_of_ns = 2
-        self.number_of_runs_er = 50
+        self.number_of_runs_er = 25
         self.er_average_degree = 4
         self.er_inter_names = []
         self.er_reg_names = []
@@ -27,62 +27,32 @@ class Simulator:
         self.inter_networks = []
         self.names_part2 = []
         self.reg_networks = []
-        self.n_part2 = 1000
+        self.n_part2 = 500
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
 
         self.p_infinities_inter_part2 = []
         self.p_infinities_reg_part2 = []
 
-    def simulate(self):
-        # nr_nodes = 50000
-        nr_nodes = 2000
-        average_degree = 4
-        networks = [
-            ER(nr_nodes, average_degree/nr_nodes),
-            RandomRegular(nr_nodes, average_degree),
-            ScaleFree(nr_nodes, 3.0, average_degree),
-            ScaleFree(nr_nodes, 2.7, average_degree),
-            ScaleFree(nr_nodes, 2.3, average_degree),
-                    ]
-        to_return = {}
-        testrange = 0
-        for neti in networks:
-            neti.interconnect_bidirectional()
-
-            print(str(neti))
-            res = []
-            for i in range(testrange, 100):
-                local_neti = neti.clone()
-                to_remove = int(((100 - i) / 100) * nr_nodes)
-                local_neti.destroy_nodes(to_remove)
-                res.append((len(local_neti.graph_1.nodes) + len(local_neti.graph_2.nodes))/(nr_nodes * 2))
-            to_return[str(neti)] = res
-        plt.figure()
-        for neti_name, netter in to_return.items():
-            plt.plot(range(testrange, 100), netter, label=neti_name)
-        plt.legend(self.ns)
-        plt.show()
-
-        return to_return
 
     def simulate_killing(self, networks, nr_of_runs, inter=True):
         ps = []
         networks_p_infinities = []
         for network in networks:
-            print(str(network))
+            print("\n"+str(network))
             p_infinities = []
             pss = []
-            for p in range(1, 100):
+            for p in range(5, 100):
                 if p % 10 == 0:
                     print(p, end=", ")
                 gc_exists_list = []
                 for m in range(1, nr_of_runs):
                     if inter:
                         local_network = network.clone()
+                        size = network.nr_nodes
                         nr_to_destroy = int(np.floor(local_network.nr_nodes * (1 - 0.01 * p)))
                         local_network.destroy_nodes(nr_to_destroy)
-                        gc_exists_list.append(local_network.p_mu_n())
+                        gc_exists_list.append(local_network.p_mu_n(size-nr_to_destroy))
                     else:
                         local_network = nx.Graph(network)
                         nr_to_destroy = int(np.floor(len(local_network.nodes) * (1 - 0.01 * p)))
