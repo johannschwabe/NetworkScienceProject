@@ -69,7 +69,7 @@ class InterdependantNetwork:
         current_neti, other_neti, current_out, other_out = \
             (self.graph_1, self.graph_2, self.graph_1_outgoing, self.graph_2_outgoing) \
             if network_nr == 1 else \
-            (self.graph_2, self.graph_1, self.graph_2_outgoing, self.graph_2_outgoing)
+            (self.graph_2, self.graph_1, self.graph_2_outgoing, self.graph_1_outgoing)
 
         if node in current_neti:
             current_neti.remove_node(node)

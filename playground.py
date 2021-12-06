@@ -1,14 +1,9 @@
-import matplotlib.pyplot as plt
-import networkx as nx
-
-from RandomRegular import RandomRegular
-from ER import ER
-from ScaleFree import ScaleFree
-from ConfigurationModel import ConfigurationModel
 from Simulator import Simulator
 
-# simi = Simulator()
-# print(simi.sim())
-
-# scali = ScaleFree(1000, 1000, 3, 3, 4, 4)
-# scali.destroy_nodes(20, 20)
+sim = Simulator()
+# sim.analyse_interdependent_er_augmenting_n()
+# sim.analyse_regular_er_augmenting_n()
+# sim.compare_regular_interdependent_er()
+sim.analyse_inter_networks_augmenting_n()
+sim.analyse_reg_networks_augmenting_n()
+sim.comparison_inter_reg_part2()
