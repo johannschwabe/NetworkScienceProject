@@ -6,18 +6,19 @@ from ScaleFree import ScaleFree
 import numpy as np
 import networkx as nx
 import random
+import time
 
 
 class Simulator:
 
     def __init__(self):
         # params whole analysis
-        self.start_n = 100  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
-        self.number_of_ns = 3  # defines number of networks to create for er analysis
-        self.nr_of_runs_network_creation = 3  # defines how often the step of creating a network should be repeated
-        self.nr_of_runs_killing = 10  # defines how often the killing should be repeated
+        self.start_n = 1000  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
+        self.number_of_ns = 7  # defines number of networks to create for er analysis
+        self.nr_of_runs_network_creation = 5  # defines how often the step of creating a network should be repeated
+        self.nr_of_runs_killing = 40  # defines how often the killing should be repeated
         self.average_degree = 4
-        self.ps = np.linspace(0.5, 1, 5)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate
+        self.ps = np.linspace(0.5, 1, 100)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate
 
         # params er analysis
         self.ns = []
@@ -61,7 +62,10 @@ class Simulator:
                     else:
                         p_mu = 0
                     gc_exists_list.append(p_mu)
+                # print("{} out of {} killing runs done".format(m, self.nr_of_runs_killing))
+            print("{} out of {} ps calculated".format(p, len(self.ps)))
             p_infinities.append(np.mean(gc_exists_list))
+
         return p_infinities
 
     def plot_pk_infinity(self, p_infinities_nw, title):
@@ -98,6 +102,7 @@ class Simulator:
         for n in self.ns:
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
+                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
                 er_network.interconnect_bidirectional()
@@ -124,6 +129,7 @@ class Simulator:
         for n in self.ns:
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
+                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
                 # 1. Create regular Erdos Renyi networks
                 er_network = nx.erdos_renyi_graph(n, self.average_degree / n)
                 # 3. Perform killing of nodes
@@ -193,6 +199,7 @@ class Simulator:
         for nw_type, nw_param in zip(network_types, network_params):
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
+                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = self.create_network(nw_type, nw_param)
                 # 3. Perform killing of nodes
@@ -220,6 +227,7 @@ class Simulator:
         for nw_type, nw_param in zip(network_types, network_params):
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
+                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = self.create_network(nw_type, nw_param, False)
                 # 3. Perform killing of nodes
@@ -245,6 +253,11 @@ class Simulator:
 
 
 sim = Simulator()
-sim.analyse_inter_networks_augmenting_n()
-sim.analyse_reg_networks_augmenting_n()
-sim.compare_inter_reg_part2()
+start_time = time.time()
+sim.analyse_inter_er_augmenting_n()
+t1 = time.time()
+print(str(t1 - start_time))
+sim.analyse_reg_er_augmenting_n()
+t2 = time.time()
+print(str(t2 - start_time))
+sim.compare_inter_reg_er()
