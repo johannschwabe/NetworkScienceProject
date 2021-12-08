@@ -139,7 +139,7 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 3. Draw scatter plot
-        self.plot_pk_infinity(list(self.p_infinities_inter_er), "Comparison interdependent ER with different N")
+        self.plot_pk_infinity(list(self.p_infinities_inter_er), f"Comparison interdependent ER with different N er_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
 
     def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
 
@@ -205,7 +205,7 @@ class Simulator:
                 n_p_infinities.append(p_infinities)
             self.p_infinities_inter_part2.append(np.array(n_p_infinities).mean(axis=0))
         # 3. plot
-        self.plot_p_infinity(self.p_infinities_inter_part2, "Comparison Interdependent Networks")
+        self.plot_p_infinity(self.p_infinities_inter_part2, f"Comparison Interdependent Networks nr_nodes: {nr_nodes}")
 
     def analyse_reg_networks_augmenting_n(self):
         # 1. Create Networks
