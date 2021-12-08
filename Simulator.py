@@ -10,6 +10,31 @@ import time
 import pandas as pd
 
 
+def create_network(nw_type, param, inter=True):
+    network = None
+    if inter:
+        if nw_type == "ER":
+            network = ER(param[0], param[1] / param[0])
+        elif nw_type == "RR":
+            network = RandomRegular(param[0], param[1])
+        elif nw_type == "SF":
+            network = ScaleFree(param[0], param[1])
+    else:
+        if nw_type == "ER":
+            network = nx.erdos_renyi_graph(param[0], (param[1] / param[0]))
+        elif nw_type == "RR":
+            network = nx.random_regular_graph(param[1], param[0])
+        elif nw_type == "SF":
+            sequence = nx.utils.powerlaw_sequence(param[0], param[1])
+            if np.sum(sequence) % 2 == 1:
+                sequence[0] += 1
+            network = nx.configuration_model(sequence)
+
+    if network is not None:
+        network.interconnect_bidirectional()
+    return network
+
+
 class Simulator:
 
     def __init__(self):
@@ -168,38 +193,14 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def create_network(self, nw_type, param, inter=True):
-        if inter:
-            if nw_type == "ER":
-                network = ER(param[0], param[1] / param[0])
-            elif nw_type == "RR":
-                network = RandomRegular(param[0], param[1])
-            elif nw_type == "SF":
-                network = ScaleFree(param[0], param[1], param[2])
-        else:
-            if nw_type == "ER":
-                network = nx.erdos_renyi_graph(param[0], (param[1] / param[0]))
-            elif nw_type == "RR":
-                network = nx.random_regular_graph(param[1], param[0])
-            elif nw_type == "SF":
-                sequence1 = nx.utils.powerlaw_sequence(param[0], param[1])
-                avg = np.average(sequence1)
-                new_seq_1 = np.array(np.round(np.array(sequence1) * param[2] / avg), dtype=int)
-                if np.sum(new_seq_1) % 2 == 1:
-                    new_seq_1[0] += 1
-                network = nx.configuration_model(new_seq_1)
-        return network
-
     def analyse_inter_networks_augmenting_n(self):
 
         # 1. Create Networks
-        network_types = ["ER", "RR", "SF", "SF", "SF"]
-        self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
         network_params = [[self.n_part2, self.average_degree_part2],
                           [self.n_part2, self.average_degree_part2],
-                          [self.n_part2, self.lambdas_part2[0], self.average_degree_part2],
-                          [self.n_part2, self.lambdas_part2[1], self.average_degree_part2],
-                          [self.n_part2, self.lambdas_part2[2], self.average_degree_part2]]
+                          [self.n_part2, self.lambdas_part2[0]],
+                          [self.n_part2, self.lambdas_part2[1]],
+                          [self.n_part2, self.lambdas_part2[2]]]
 
         self.names_part2.append("ER")
         self.names_part2.append("RR")
@@ -208,14 +209,15 @@ class Simulator:
         self.names_part2.append("SF lam = " + str(self.lambdas_part2[2]))
 
         start_time = time.time()
-        for nw_type, nw_param in zip(network_types, network_params):
+        for nw_type, nw_param in zip(self.nw_types, network_params):
             nw_time = time.time()
-            print("Simulate network type {} with params {}. Time elapsed since start: {}".format(nw_type, nw_param, nw_time-start_time))
+            print("Simulate network type {} with params {}. Time elapsed since start: {}".format(nw_type, nw_param,
+                                                                                                 nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
                 # 1. Create network
-                network = self.create_network(nw_type, nw_param)
+                network = create_network(nw_type, nw_param)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network)
                 n_p_infinities.append(p_infinities)
@@ -247,7 +249,7 @@ class Simulator:
             for i in range(self.nr_of_runs_network_creation):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
                 # 1. Create network
-                network = self.create_network(nw_type, nw_param, False)
+                network = create_network(nw_type, nw_param, False)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network, inter=False)
                 n_p_infinities.append(p_infinities)
