@@ -5,16 +5,12 @@ import networkx as nx
 
 
 class ScaleFree(InterdependantNetwork):
-    def __init__(self, nr_nodes, expo):
+    def __init__(self, nr_nodes):
         super().__init__(nr_nodes)
-        sequence = np.array(nx.utils.powerlaw_sequence(nr_nodes, expo), dtype=int)
-        if np.sum(sequence) % 2 == 1:
-            sequence[0] += 1
 
-        self.graph_1 = nx.configuration_model(sequence)
-        self.graph_2 = nx.configuration_model(sequence)
-        self.expo = expo
+        self.graph_1 = nx.barabasi_albert_graph(nr_nodes, 2)
+        self.graph_2 = nx.barabasi_albert_graph(nr_nodes, 2)
 
     def __str__(self):
-        return f"Scale Free: {self.expo}"
+        return f"Scale Free"
 

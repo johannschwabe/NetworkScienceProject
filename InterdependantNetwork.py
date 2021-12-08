@@ -98,7 +98,7 @@ class InterdependantNetwork:
             if invalid is not None:
                 invalid_1.add(invalid)
 
-        # Make shure that nodes removed this round aren't falsy removed again next round
+        # Make sure that nodes removed this round aren't falsy removed again next round
         invalid_1 = invalid_1.difference(kill_list_1)
         invalid_2 = invalid_2.difference(kill_list_2)
 
