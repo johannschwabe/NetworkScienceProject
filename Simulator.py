@@ -42,10 +42,10 @@ class Simulator:
         self.start_n = 1000  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
         self.number_of_ns = 5  # defines number of networks to create for er analysis
         self.nr_of_runs_network_creation = 2  # defines how often the step of creating a network should be repeated
-        self.nr_of_runs_killing = 10  # defines how often the killing should be repeated
+        self.nr_of_runs_killing = 15  # defines how often the killing should be repeated
         self.average_degree = 4
-        # self.ps = np.linspace(0.59, 0.625, 20)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 1
-        self.ps = np.linspace(0.55, 0.9, 10)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 2
+        self.ps = np.linspace(0.59, 0.625, 20)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 1
+        # self.ps = np.linspace(0.55, 0.9, 7)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 2
 
         # params er analysis
         self.ns = []
@@ -58,7 +58,7 @@ class Simulator:
 
         # params second analysis
         self.names_part2 = []
-        self.n_part2 = 5000
+        self.n_part2 = 50000
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
         self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
@@ -134,7 +134,7 @@ class Simulator:
             print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(n + 1, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n, i + 1, self.nr_of_runs_network_creation))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
                 er_network.interconnect_bidirectional()
@@ -164,7 +164,7 @@ class Simulator:
             print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(n + 1, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n, i + 1, self.nr_of_runs_network_creation))
                 # 1. Create regular Erdos Renyi networks
                 er_network = nx.erdos_renyi_graph(n, self.average_degree / n)
                 # 3. Perform killing of nodes
