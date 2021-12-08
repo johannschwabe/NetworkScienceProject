@@ -11,8 +11,9 @@ er_start_n = int(sys.argv[6])
 er_nr_steps = int(sys.argv[7])
 nr_nodes = int(sys.argv[8])
 plot_nr = int(sys.argv[9])
+bidirectional = sys.argv[10] == "1"
 
-sim = Simulator(nr_created_networks, nr_runs_per_network, range_start, range_end, range_steps)
+sim = Simulator(nr_created_networks, nr_runs_per_network, range_start, range_end, range_steps, bidirectional)
 
 if plot_nr == 1:
     # Plt 1

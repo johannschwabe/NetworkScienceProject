@@ -12,12 +12,13 @@ import pandas as pd
 
 class Simulator:
 
-    def __init__(self, nr_created_networks, nr_runs_per_network, range_start, range_end, range_nr_steps):
+    def __init__(self, nr_created_networks, nr_runs_per_network, range_start, range_end, range_nr_steps, bidir):
         # General parameters
         self.nr_created_networks = nr_created_networks  # defines how often the step of creating a network should be repeated
         self.nr_runs_per_network = nr_runs_per_network  # defines how often the killing should be repeated
         self.average_degree = 4
         self.remaining_nodes_options = np.linspace(range_start, range_end, range_nr_steps)  # start point (0 = 0%), end point (1 = 100%) and number
+        self.bidir = bidir
         # of steps to generate plt 2
 
 
@@ -55,6 +56,12 @@ class Simulator:
                 network = nx.random_regular_graph(self.average_degree, nr_nodes)
             elif nw_type == "SF":
                 network = nx.barabasi_albert_graph(nr_nodes, 2)
+
+        if network is not None and inter:
+            if self.bidir:
+                network.interconnect_bidirectional()
+            else:
+                network.interconnect_unidirectional()
         return network
 
     def simulate_killing(self, network, inter=True):
@@ -127,7 +134,10 @@ class Simulator:
                 print("Network {}: {} out of {} networks created".format(n, i, self.nr_created_networks))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
-                er_network.interconnect_bidirectional()
+                if self.bidir:
+                    er_network.interconnect_bidirectional()
+                else:
+                    er_network.interconnect_unidirectional()
                 # 2. Perform cascading failure M times for increasing p to calculate pInfinity
                 p_infinities = self.simulate_killing(er_network)
                 n_p_infinities.append(p_infinities)
