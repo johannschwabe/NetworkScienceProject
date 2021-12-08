@@ -52,6 +52,7 @@ class Simulator:
                 network = RandomRegular(self.nr_nodes, self.average_degree)
             elif nw_type == "SF":
                 network = ScaleFree(self.nr_nodes)
+            network.interconnect_bidirectional()
         else:
             if nw_type == "ER":
                 network = nx.erdos_renyi_graph(self.nr_nodes, (self.average_degree / self.nr_nodes))
@@ -59,9 +60,6 @@ class Simulator:
                 network = nx.random_regular_graph(self.average_degree, self.nr_nodes)
             elif nw_type == "SF":
                 network = nx.barabasi_albert_graph(self.nr_nodes, 2)
-
-        if network is not None:
-            network.interconnect_bidirectional()
         return network
 
     def simulate_killing(self, network, inter=True):
