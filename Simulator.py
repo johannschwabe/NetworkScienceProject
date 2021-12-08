@@ -58,7 +58,7 @@ class Simulator:
 
         # params second analysis
         self.names_part2 = []
-        self.n_part2 = 50000
+        self.n_part2 = 5000
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
         self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
@@ -134,7 +134,7 @@ class Simulator:
             print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(n, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n + 1, i, self.nr_of_runs_network_creation))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
                 er_network.interconnect_bidirectional()
@@ -164,7 +164,7 @@ class Simulator:
             print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(n, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n + 1, i, self.nr_of_runs_network_creation))
                 # 1. Create regular Erdos Renyi networks
                 er_network = nx.erdos_renyi_graph(n, self.average_degree / n)
                 # 3. Perform killing of nodes
@@ -215,7 +215,7 @@ class Simulator:
                                                                                                  nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(nw_type, i + 1, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = create_network(nw_type, nw_param)
                 # 3. Perform killing of nodes
@@ -247,7 +247,7 @@ class Simulator:
             print("Simulate network type {} with params {}. Time elapsed since start: {}".format(nw_type, nw_param, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(nw_type, i + 1, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = create_network(nw_type, nw_param, False)
                 # 3. Perform killing of nodes
