@@ -4,7 +4,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.DS_Store
 # C extensions
 *.so
 
@@ -130,3 +130,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.png
+/ex1.txt
+/ex2.txt
+/results/

@@ -76,7 +76,7 @@ class Simulator:
                     # Calculate p infinity
                     connected_components = [len(c) for c in
                                             sorted(nx.connected_components(local_network), key=len, reverse=True)]
-                    if connected_components[0] > 1:
+                    if len(connected_components) and connected_components[0] > 1:
                         p_mu = connected_components[0] / len(local_network.nodes)
                     else:
                         p_mu = 0
@@ -167,7 +167,7 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 4. Draw scatter plot
-        self.plot_pk_infinity(self.p_infinities_reg_er, "Comparison regular ER with different N")
+        self.plot_pk_infinity(self.p_infinities_reg_er, f"Comparison regular ER with different N er_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
 
     def compare_inter_reg_er(self):
         for p_inf_inter_er, p_inf_reg_er, name, n in zip(self.p_infinities_inter_er, self.p_infinities_reg_er,
@@ -207,7 +207,7 @@ class Simulator:
         # 3. plot
         self.plot_p_infinity(self.p_infinities_inter_part2, f"Comparison Interdependent Networks nr_nodes: {nr_nodes}")
 
-    def analyse_reg_networks_augmenting_n(self):
+    def analyse_reg_networks_augmenting_n(self, nr_nodes):
         # 1. Create Networks
         self.names_part2.append("ER")
         self.names_part2.append("RR")
@@ -221,13 +221,13 @@ class Simulator:
             for i in range(self.nr_created_networks):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_created_networks))
                 # 1. Create network
-                network = self.create_network(nw_type, False)
+                network = self.create_network(nw_type, nr_nodes, False)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network, inter=False)
                 n_p_infinities.append(p_infinities)
             self.p_infinities_reg_part2.append(np.array(n_p_infinities).mean(axis=0))
         # 3. plot
-        self.plot_p_infinity(self.p_infinities_reg_part2, "Comparison Regular Networks")
+        self.plot_p_infinity(self.p_infinities_reg_part2, f"Comparison Regular Networks nr_nodes: {nr_nodes}")
 
     def compare_inter_reg_part2(self):
         for p_inf_inter, p_inf_reg, name in zip(self.p_infinities_inter_part2, self.p_infinities_reg_part2,
