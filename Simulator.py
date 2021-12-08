@@ -14,7 +14,7 @@ class Simulator:
 
     def __init__(self):
         # General parameters
-        self.nr_created_networks = 10  # defines how often the step of creating a network should be repeated
+        self.nr_created_networks = 2  # defines how often the step of creating a network should be repeated
         self.nr_runs_per_network = 1  # defines how often the killing should be repeated
         self.average_degree = 4
         self.remaining_nodes_options = np.linspace(0, 1, 11)  # start point (0 = 0%), end point (1 = 100%) and number
@@ -23,7 +23,7 @@ class Simulator:
         # ER analysis params
         self.er_start_n = 100  # defines the number of nodes of the smallest network for er analysis. Then n_new = n
         # * 2^i
-        self.er_nr_steps = 5  # defines number of networks to create for er analysis
+        self.er_nr_steps = 7  # defines number of networks to create for er analysis
 
         # Networks analysis params
         self.nr_nodes = 1000
@@ -43,7 +43,7 @@ class Simulator:
         self.p_infinities_inter_part2 = []
         self.p_infinities_reg_part2 = []
 
-    def create_network(self, nw_type, inter=True):
+    def create_network(self, nw_type, inter=True, bidir=True):
         network = None
         if inter:
             if nw_type == "ER":
@@ -61,7 +61,10 @@ class Simulator:
                 network = nx.barabasi_albert_graph(self.nr_nodes, 2)
 
         if network is not None:
-            network.interconnect_bidirectional()
+            if bidir:
+                network.interconnect_bidirectional()
+            else:
+                network.interconnect_unidirectional()
         return network
 
     def simulate_killing(self, network, inter=True):
@@ -119,7 +122,7 @@ class Simulator:
         path = os.path.join(directory, 'figures', str(title) + ".png")
         plt.savefig(path)
 
-    def analyse_inter_er_augmenting_n(self):
+    def analyse_inter_er_augmenting_n(self, bidir=True):
 
         # Ns from paper 1000, 2000, 4000 ... 64 000
         self.ns = []
@@ -135,7 +138,10 @@ class Simulator:
                 print("Network {}: {} out of {} networks created".format(n, i, self.nr_created_networks))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
-                er_network.interconnect_bidirectional()
+                if bidir:
+                    er_network.interconnect_bidirectional()
+                else:
+                    er_network.interconnect_unidirectional()
                 # 2. Perform cascading failure M times for increasing p to calculate pInfinity
                 p_infinities = self.simulate_killing(er_network)
                 n_p_infinities.append(p_infinities)
@@ -192,7 +198,7 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def analyse_inter_networks_augmenting_n(self):
+    def analyse_inter_networks_augmenting_n(self, bidir=True):
 
         # 1. Create Networks
         self.names_part2.append("ER")
@@ -207,7 +213,7 @@ class Simulator:
             for i in range(self.nr_created_networks):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_created_networks))
                 # 1. Create network
-                network = self.create_network(nw_type)
+                network = self.create_network(nw_type, bidir=bidir)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network)
                 n_p_infinities.append(p_infinities)

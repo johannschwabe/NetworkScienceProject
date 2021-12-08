@@ -1,3 +1,4 @@
+import copy
 import random
 
 import networkx as nx
@@ -15,8 +16,8 @@ class InterdependantNetwork:
     # generate "nr_connections" random interconnections between the two networks
     def interconnect_bidirectional(self):
         for connection in range(self.nr_nodes):
-            self.graph_1_outgoing[connection] = connection
-            self.graph_2_outgoing[connection] = connection
+            self.graph_1_outgoing[connection] = [connection]
+            self.graph_2_outgoing[connection] = [connection]
 
     def interconnect_unidirectional(self):
         self.connect_graphs(self.graph_1_outgoing)
@@ -24,10 +25,12 @@ class InterdependantNetwork:
 
     def connect_graphs(self, outgoing):
         for connection in range(self.nr_nodes):
-            rnd_node = random.randrange(self.nr_nodes)
-            while rnd_node in outgoing.values():
-                rnd_node = random.randrange(self.nr_nodes)
-            outgoing[connection] = rnd_node
+            outgoing[connection] = []
+        for connection in range(self.nr_nodes):
+            rnd_node1 = random.randrange(self.nr_nodes)
+            rnd_node2 = random.randrange(self.nr_nodes)
+            if rnd_node1 in outgoing:
+                outgoing[rnd_node1].append(rnd_node2)
 
     def interconnected_graph(self):
         graph = nx.DiGraph()
@@ -76,12 +79,9 @@ class InterdependantNetwork:
 
         # Remove interconnections
         for key, value in other_out.items():
-            if node == value:
-                other_out.pop(key)
-                break
-        if node in current_out:
-            return current_out.pop(node)
-        return None
+            if node in value:
+                other_out[key].remove(node)
+        return set(current_out[node])
 
     # Recursively removes nodes until a stable state is reached
     def cascade(self, kill_list_1, kill_list_2):
@@ -91,12 +91,10 @@ class InterdependantNetwork:
         # Remove previously marked nodes
         for random_node in kill_list_1:
             invalid = self.destroy_node(random_node, 1)
-            if invalid is not None:
-                invalid_2.add(invalid)
+            invalid_2 = invalid_2.union(invalid)
         for random_node in kill_list_2:
             invalid = self.destroy_node(random_node, 2)
-            if invalid is not None:
-                invalid_1.add(invalid)
+            invalid_1 = invalid_1.union(invalid)
 
         # Make sure that nodes removed this round aren't falsy removed again next round
         invalid_1 = invalid_1.difference(kill_list_1)
@@ -142,8 +140,8 @@ class InterdependantNetwork:
         new_network = InterdependantNetwork(self.nr_nodes)
         new_network.graph_1 = nx.Graph(self.graph_1)
         new_network.graph_2 = nx.Graph(self.graph_2)
-        new_network.graph_1_outgoing = self.graph_1_outgoing.copy()
-        new_network.graph_2_outgoing = self.graph_2_outgoing.copy()
+        new_network.graph_1_outgoing = copy.deepcopy(self.graph_1_outgoing)
+        new_network.graph_2_outgoing = copy.deepcopy(self.graph_2_outgoing)
         return new_network
 
     def p_mu_n(self, reduced_size):

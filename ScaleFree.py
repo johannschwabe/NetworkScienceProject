@@ -1,5 +1,3 @@
-import numpy as np
-
 from InterdependantNetwork import InterdependantNetwork
 import networkx as nx
 
