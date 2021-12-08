@@ -7,18 +7,19 @@ import numpy as np
 import networkx as nx
 import random
 import time
+import pandas as pd
 
 
 class Simulator:
 
     def __init__(self):
         # params whole analysis
-        self.start_n = 1000  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
-        self.number_of_ns = 7  # defines number of networks to create for er analysis
-        self.nr_of_runs_network_creation = 5  # defines how often the step of creating a network should be repeated
-        self.nr_of_runs_killing = 40  # defines how often the killing should be repeated
+        self.start_n = 20  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
+        self.number_of_ns = 3  # defines number of networks to create for er analysis
+        self.nr_of_runs_network_creation = 2  # defines how often the step of creating a network should be repeated
+        self.nr_of_runs_killing = 2  # defines how often the killing should be repeated
         self.average_degree = 4
-        self.ps = np.linspace(0.5, 1, 100)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate
+        self.ps = np.linspace(0.5, 1, 10)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate
 
         # params er analysis
         self.ns = []
@@ -34,6 +35,7 @@ class Simulator:
         self.n_part2 = 10
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
+        self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
 
         self.p_infinities_inter_part2 = []
         self.p_infinities_reg_part2 = []
@@ -63,7 +65,7 @@ class Simulator:
                         p_mu = 0
                     gc_exists_list.append(p_mu)
                 # print("{} out of {} killing runs done".format(m, self.nr_of_runs_killing))
-            print("{} out of {} ps calculated".format(p, len(self.ps)))
+            print("{} calculated".format(p))
             p_infinities.append(np.mean(gc_exists_list))
 
         return p_infinities
@@ -99,10 +101,13 @@ class Simulator:
         for i in range(0, self.number_of_ns):
             self.ns.append(2**i * self.start_n)
 
+        start_time = time.time()
         for n in self.ns:
+            nw_time = time.time()
+            print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n, i, self.nr_of_runs_network_creation))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
                 er_network.interconnect_bidirectional()
@@ -126,10 +131,13 @@ class Simulator:
         for i in range(self.number_of_ns):
             self.ns.append(2 ** i * self.start_n)
 
+        start_time = time.time()
         for n in self.ns:
+            nw_time = time.time()
+            print("Simulate network size {}. Time since start: {}".format(n, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(n, i, self.nr_of_runs_network_creation))
                 # 1. Create regular Erdos Renyi networks
                 er_network = nx.erdos_renyi_graph(n, self.average_degree / n)
                 # 3. Perform killing of nodes
@@ -184,6 +192,7 @@ class Simulator:
 
         # 1. Create Networks
         network_types = ["ER", "RR", "SF", "SF", "SF"]
+        self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
         network_params = [[self.n_part2, self.average_degree_part2],
                           [self.n_part2, self.average_degree_part2],
                           [self.n_part2, self.lambdas_part2[0], self.average_degree_part2],
@@ -196,10 +205,13 @@ class Simulator:
         self.names_part2.append("SF lam = " + str(self.lambdas_part2[1]))
         self.names_part2.append("SF lam = " + str(self.lambdas_part2[2]))
 
+        start_time = time.time()
         for nw_type, nw_param in zip(network_types, network_params):
+            nw_time = time.time()
+            print("Simulate network type {} with params {}. Time elapsed since start: {}".format(nw_type, nw_param, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = self.create_network(nw_type, nw_param)
                 # 3. Perform killing of nodes
@@ -212,6 +224,7 @@ class Simulator:
     def analyse_reg_networks_augmenting_n(self):
         # 1. Create Networks
         network_types = ["ER", "RR", "SF", "SF", "SF"]
+        self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
         network_params = [[self.n_part2, self.average_degree_part2],
                           [self.n_part2, self.average_degree_part2],
                           [self.n_part2, self.lambdas_part2[0], self.average_degree_part2],
@@ -224,10 +237,13 @@ class Simulator:
         self.names_part2.append("SF lam = " + str(self.lambdas_part2[1]))
         self.names_part2.append("SF lam = " + str(self.lambdas_part2[2]))
 
+        start_time = time.time()
         for nw_type, nw_param in zip(network_types, network_params):
+            nw_time = time.time()
+            print("Simulate network type {} with params {}. Time elapsed since start: {}".format(nw_type, nw_param, nw_time-start_time))
             n_p_infinities = []
             for i in range(self.nr_of_runs_network_creation):
-                print("{} out of {} networks created".format(i, self.nr_of_runs_network_creation))
+                print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_of_runs_network_creation))
                 # 1. Create network
                 network = self.create_network(nw_type, nw_param, False)
                 # 3. Perform killing of nodes
@@ -251,13 +267,40 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
+    def save_results(self):
+        directory = os.path.dirname(__file__)
+
+        if len(self.p_infinities_inter_er) > 0:
+            path = os.path.join(directory, 'results', "results_inter_er.csv")
+            p_infinities = np.array(self.p_infinities_inter_er).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.ns)
+            results['psk'] = self.psk
+            results.to_csv(path)
+
+        if len(self.p_infinities_reg_er) > 0:
+            path = os.path.join(directory, 'results', "results_reg_er.csv")
+            p_infinities = np.array(self.p_infinities_reg_er).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.ns)
+            results['psk'] = self.psk
+            results.to_csv(path)
+
+        if len(self.p_infinities_inter_part2) > 0:
+            path = os.path.join(directory, 'results', "results_inter_networks.csv")
+            p_infinities = np.array(self.p_infinities_inter_part2).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.nw_types)
+            results['psk'] = self.ps
+            results.to_csv(path)
+
+        if len(self.p_infinities_reg_part2) > 0:
+            path = os.path.join(directory, 'results', "results_reg_networks.csv")
+            p_infinities = np.array(self.p_infinities_reg_part2).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.nw_types)
+            results['psk'] = self.ps
+            results.to_csv(path)
+
+
+
 
 sim = Simulator()
-start_time = time.time()
-sim.analyse_inter_er_augmenting_n()
-t1 = time.time()
-print(str(t1 - start_time))
-sim.analyse_reg_er_augmenting_n()
-t2 = time.time()
-print(str(t2 - start_time))
-sim.compare_inter_reg_er()
+sim.analyse_inter_networks_augmenting_n()
+sim.save_results()
