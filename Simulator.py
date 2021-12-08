@@ -184,7 +184,7 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def analyse_inter_networks_augmenting_n(self):
+    def analyse_inter_networks_augmenting_n(self, nr_nodes):
 
         # 1. Create Networks
         self.names_part2.append("ER")
@@ -199,7 +199,7 @@ class Simulator:
             for i in range(self.nr_created_networks):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_created_networks))
                 # 1. Create network
-                network = self.create_network(nw_type)
+                network = self.create_network(nw_type, nr_nodes)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network)
                 n_p_infinities.append(p_infinities)
