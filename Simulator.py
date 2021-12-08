@@ -12,21 +12,17 @@ import pandas as pd
 
 class Simulator:
 
-    def __init__(self):
+    def __init__(self, nr_created_networks, nr_runs_per_network, range_start, range_end, range_nr_steps, bidir):
         # General parameters
-        self.nr_created_networks = 2  # defines how often the step of creating a network should be repeated
-        self.nr_runs_per_network = 1  # defines how often the killing should be repeated
+        self.nr_created_networks = nr_created_networks  # defines how often the step of creating a network should be repeated
+        self.nr_runs_per_network = nr_runs_per_network  # defines how often the killing should be repeated
         self.average_degree = 4
-        self.remaining_nodes_options = np.linspace(0, 1, 11)  # start point (0 = 0%), end point (1 = 100%) and number
+        self.remaining_nodes_options = np.linspace(range_start, range_end, range_nr_steps)  # start point (0 = 0%), end point (1 = 100%) and number
+        self.bidir = bidir
         # of steps to generate plt 2
 
-        # ER analysis params
-        self.er_start_n = 100  # defines the number of nodes of the smallest network for er analysis. Then n_new = n
-        # * 2^i
-        self.er_nr_steps = 7  # defines number of networks to create for er analysis
 
         # Networks analysis params
-        self.nr_nodes = 1000
         self.nw_types = ["ER", "RR", "SF"]
 
         # Helpers: er analysis
@@ -43,25 +39,26 @@ class Simulator:
         self.p_infinities_inter_part2 = []
         self.p_infinities_reg_part2 = []
 
-    def create_network(self, nw_type, inter=True, bidir=True):
+    def create_network(self, nw_type, nr_nodes, inter=True):
         network = None
         if inter:
             if nw_type == "ER":
-                network = ER(self.nr_nodes, self.average_degree / self.nr_nodes)
+                network = ER(nr_nodes, self.average_degree / nr_nodes)
             elif nw_type == "RR":
-                network = RandomRegular(self.nr_nodes, self.average_degree)
+                network = RandomRegular(nr_nodes, self.average_degree)
             elif nw_type == "SF":
-                network = ScaleFree(self.nr_nodes)
+                network = ScaleFree(nr_nodes)
+            network.interconnect_bidirectional()
         else:
             if nw_type == "ER":
-                network = nx.erdos_renyi_graph(self.nr_nodes, (self.average_degree / self.nr_nodes))
+                network = nx.erdos_renyi_graph(nr_nodes, (self.average_degree / nr_nodes))
             elif nw_type == "RR":
-                network = nx.random_regular_graph(self.average_degree, self.nr_nodes)
+                network = nx.random_regular_graph(self.average_degree, nr_nodes)
             elif nw_type == "SF":
-                network = nx.barabasi_albert_graph(self.nr_nodes, 2)
+                network = nx.barabasi_albert_graph(nr_nodes, 2)
 
-        if network is not None:
-            if bidir:
+        if network is not None and inter:
+            if self.bidir:
                 network.interconnect_bidirectional()
             else:
                 network.interconnect_unidirectional()
@@ -122,12 +119,11 @@ class Simulator:
         path = os.path.join(directory, 'figures', str(title) + ".png")
         plt.savefig(path)
 
-    def analyse_inter_er_augmenting_n(self, bidir=True):
-
+    def analyse_inter_er_augmenting_n(self, er_start_n, er_nr_steps):
         # Ns from paper 1000, 2000, 4000 ... 64 000
         self.ns = []
-        for i in range(0, self.er_nr_steps):
-            self.ns.append(2 ** i * self.er_start_n)
+        for i in range(0, er_nr_steps):
+            self.ns.append(2 ** i * er_start_n)
 
         start_time = time.time()
         for n in self.ns:
@@ -138,7 +134,7 @@ class Simulator:
                 print("Network {}: {} out of {} networks created".format(n, i, self.nr_created_networks))
                 # 1. Create interdependent Erdos Renyi networks
                 er_network = ER(n, self.average_degree / n)
-                if bidir:
+                if self.bidir:
                     er_network.interconnect_bidirectional()
                 else:
                     er_network.interconnect_unidirectional()
@@ -153,14 +149,14 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 3. Draw scatter plot
-        self.plot_pk_infinity(list(self.p_infinities_inter_er), "Comparison interdependent ER with different N")
+        self.plot_pk_infinity(list(self.p_infinities_inter_er), f"Comparison interdependent ER with different N er_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
 
-    def analyse_reg_er_augmenting_n(self):
+    def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
 
         # Ns from paper 1000, 2000, 4000 ... 64 000
         self.ns = []
-        for i in range(self.er_nr_steps):
-            self.ns.append(2 ** i * self.er_start_n)
+        for i in range(er_nr_steps):
+            self.ns.append(2 ** i * er_start_n)
 
         start_time = time.time()
         for n in self.ns:
@@ -198,7 +194,7 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def analyse_inter_networks_augmenting_n(self, bidir=True):
+    def analyse_inter_networks_augmenting_n(self, nr_nodes):
 
         # 1. Create Networks
         self.names_part2.append("ER")
@@ -213,13 +209,13 @@ class Simulator:
             for i in range(self.nr_created_networks):
                 print("Network {}: {} out of {} networks created".format(nw_type, i, self.nr_created_networks))
                 # 1. Create network
-                network = self.create_network(nw_type, bidir=bidir)
+                network = self.create_network(nw_type, nr_nodes)
                 # 3. Perform killing of nodes
                 p_infinities = self.simulate_killing(network)
                 n_p_infinities.append(p_infinities)
             self.p_infinities_inter_part2.append(np.array(n_p_infinities).mean(axis=0))
         # 3. plot
-        self.plot_p_infinity(self.p_infinities_inter_part2, "Comparison Interdependent Networks")
+        self.plot_p_infinity(self.p_infinities_inter_part2, f"Comparison Interdependent Networks nr_nodes: {nr_nodes}")
 
     def analyse_reg_networks_augmenting_n(self):
         # 1. Create Networks
