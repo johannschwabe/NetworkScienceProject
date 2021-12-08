@@ -14,12 +14,13 @@ class Simulator:
 
     def __init__(self):
         # params whole analysis
-        self.start_n = 20  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
-        self.number_of_ns = 3  # defines number of networks to create for er analysis
+        self.start_n = 1000  # defines the number of nodes of the smallest network for er analysis. Then n_new = n * 2^i
+        self.number_of_ns = 5  # defines number of networks to create for er analysis
         self.nr_of_runs_network_creation = 2  # defines how often the step of creating a network should be repeated
-        self.nr_of_runs_killing = 2  # defines how often the killing should be repeated
+        self.nr_of_runs_killing = 10  # defines how often the killing should be repeated
         self.average_degree = 4
-        self.ps = np.linspace(0.5, 1, 10)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate
+        # self.ps = np.linspace(0.59, 0.625, 20)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 1
+        self.ps = np.linspace(0.55, 0.9, 10)  # start point (0 = 0%), end point (1 = 100%) and number of steps to generate plt 2
 
         # params er analysis
         self.ns = []
@@ -32,7 +33,7 @@ class Simulator:
 
         # params second analysis
         self.names_part2 = []
-        self.n_part2 = 10
+        self.n_part2 = 50000
         self.average_degree_part2 = 4
         self.lambdas_part2 = [3, 2.7, 2.3]
         self.nw_types = ["ER", "RR", "SF", "SF", "SF"]
@@ -71,6 +72,7 @@ class Simulator:
         return p_infinities
 
     def plot_pk_infinity(self, p_infinities_nw, title):
+        print(p_infinities_nw)
         plt.figure()
         for p_infinities in p_infinities_nw:
             plt.plot(self.psk, p_infinities)
@@ -299,8 +301,3 @@ class Simulator:
             results.to_csv(path)
 
 
-
-
-sim = Simulator()
-sim.analyse_inter_networks_augmenting_n()
-sim.save_results()

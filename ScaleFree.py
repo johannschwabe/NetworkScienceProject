@@ -7,15 +7,12 @@ import networkx as nx
 class ScaleFree(InterdependantNetwork):
     def __init__(self, nr_nodes, expo, avg):
         super().__init__(nr_nodes)
-        sequence = np.array(nx.utils.powerlaw_sequence(nr_nodes, expo))
-        avg_deg = np.average(sequence)
-        # avg_deg = avg
-        new_seq = np.array(np.round(sequence * avg/avg_deg), dtype=int)
-        if np.sum(new_seq) % 2 == 1:
-            new_seq[0] += 1
+        sequence = np.array(nx.utils.powerlaw_sequence(nr_nodes, expo), dtype=int)
+        if np.sum(sequence) % 2 == 1:
+            sequence[0] += 1
 
-        self.graph_1 = nx.configuration_model(new_seq)
-        self.graph_2 = nx.configuration_model(new_seq)
+        self.graph_1 = nx.configuration_model(sequence)
+        self.graph_2 = nx.configuration_model(sequence)
         self.avg = avg
         self.expo = expo
 
