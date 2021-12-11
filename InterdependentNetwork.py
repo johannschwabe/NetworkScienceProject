@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-class InterdependantNetwork:
+class InterdependentNetwork:
     def __init__(self, nr_nodes):
         self.graph_1 = None
         self.graph_2 = None
@@ -60,9 +60,8 @@ class InterdependantNetwork:
         invalid_names_2 = [f"2_{node}" for node in invalid_2]
         plt.figure()
         G = self.interconnected_graph()
-        color_map = ["pink" if node in invalid_names_1 else "aquamarine" if node in invalid_names_2 else "red" if node[
-                                                                                                                  :1] == "1" else "limegreen"
-                     for node in G]
+        color_map = ["pink" if node in invalid_names_1 else "aquamarine" if node in invalid_names_2 else "red" if
+                     node[:1] == "1" else "limegreen" for node in G]
         nx.draw(G, node_color=color_map, with_labels=True)
         plt.show()
 
@@ -137,7 +136,7 @@ class InterdependantNetwork:
         self.cascade(destroy, [])
 
     def clone(self):
-        new_network = InterdependantNetwork(self.nr_nodes)
+        new_network = InterdependentNetwork(self.nr_nodes)
         new_network.graph_1 = nx.Graph(self.graph_1)
         new_network.graph_2 = nx.Graph(self.graph_2)
         new_network.graph_1_outgoing = copy.deepcopy(self.graph_1_outgoing)

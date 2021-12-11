@@ -1,9 +1,9 @@
 import networkx as nx
 
-from InterdependantNetwork import InterdependantNetwork
+from InterdependentNetwork import InterdependentNetwork
 
 
-class ER(InterdependantNetwork):
+class ER(InterdependentNetwork):
     def __init__(self, nr_nodes, p):
         super().__init__(nr_nodes)
         self.graph_1 = nx.erdos_renyi_graph(nr_nodes, p)

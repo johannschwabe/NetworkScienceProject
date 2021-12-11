@@ -1,8 +1,8 @@
-from InterdependantNetwork import InterdependantNetwork
+from InterdependentNetwork import InterdependentNetwork
 import networkx as nx
 
 
-class ConfigurationModel(InterdependantNetwork):
+class ConfigurationModel(InterdependentNetwork):
     def __init__(self, nr_nodes, gamma):
         super().__init__(nr_nodes)
         sequence = nx.random_powerlaw_tree_sequence(nr_nodes, gamma=gamma, tries=5000)
@@ -11,4 +11,3 @@ class ConfigurationModel(InterdependantNetwork):
 
     def __str__(self):
         return "Configuration Model"
-
