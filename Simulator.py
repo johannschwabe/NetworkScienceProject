@@ -176,7 +176,7 @@ class Simulator:
                                   f"{er_start_n}, er_nr_steps: "
                                   f"{er_nr_steps}",
                                   bidir,
-                                  "interER")
+                                  "ERInter")
         else:
             # 2.2 make ps to psk
             self.psk_unidir = [element * self.average_degree for element in self.remaining_nodes_options]
@@ -187,7 +187,7 @@ class Simulator:
                                   f"{er_start_n}, er_nr_steps: "
                                   f"{er_nr_steps}",
                                   bidir,
-                                  "interER")
+                                  "ERInter")
 
     def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
         # Ns from paper 1000, 2000, 4000 ... 64 000
@@ -217,7 +217,7 @@ class Simulator:
                               f"Comparison regular ER with different N er_start_n: {er_start_n}, er_nr_steps: "
                               f"{er_nr_steps}",
                               True,
-                              "regER")
+                              "ERReg")
 
     def analyse_inter_networks_augmenting_n(self, nr_nodes, bidir):
         # 1. Create Networks
@@ -248,12 +248,12 @@ class Simulator:
             self.plot_p_infinity(self.p_infinities_inter_bidir_ns,
                                  f"Comparison Interdependent Networks with {nr_nodes} Nodes",
                                  bidir,
-                                 "interNS")
+                                 "NSInter")
         else:
             self.plot_p_infinity(self.p_infinities_inter_unidir_ns,
                                  f"Comparison Interdependent Networks with {nr_nodes} Nodes",
                                  bidir,
-                                 "interNS")
+                                 "NSInter")
 
     def analyse_reg_networks_augmenting_n(self, nr_nodes):
         # 1. Create Networks
@@ -280,7 +280,7 @@ class Simulator:
         self.plot_p_infinity(self.p_infinities_reg_ns,
                              f"Comparison Regular Networks with {nr_nodes} Nodes",
                              True,
-                             "regNS")
+                             "NSReg")
 
     def save_results(self):
         directory = os.path.dirname(__file__)
@@ -346,7 +346,7 @@ class Simulator:
             plt.legend(labels)
             plt.title(f"Comparison Interdependent vs. Regular {name} Networks")
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', str(name) + ".png")
+            path = os.path.join(directory, 'figures', str(name) + str(int(time.time())) + ".png")
             plt.savefig(path)
 
     @staticmethod
