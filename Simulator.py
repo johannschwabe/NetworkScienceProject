@@ -27,7 +27,7 @@ class Simulator:
         # of steps to generate plt 2
 
         # Networks analysis params
-        self.nw_types = ["ER", "RR", "SF"]
+        self.nw_types = ["ER", "RR", "SF_2.3", "SF_2.7", "SF_3.0"]
 
         # Helpers: er analysis
         self.ns = []
@@ -46,20 +46,29 @@ class Simulator:
     def create_network(self, nw_type, nr_nodes, inter=True):
         network = None
         if inter:
+            print(nw_type)
             if nw_type == "ER":
                 network = ER(nr_nodes, self.average_degree / nr_nodes)
             elif nw_type == "RR":
                 network = RandomRegular(nr_nodes, self.average_degree)
-            elif nw_type == "SF":
-                network = ScaleFree(nr_nodes)
+            elif nw_type == "SF_2.3":
+                network = ScaleFree(nr_nodes, 2.3)
+            elif nw_type == "SF_2.7":
+                network = ScaleFree(nr_nodes, 2.7)
+            elif nw_type == "SF_3.0":
+                network = ScaleFree(nr_nodes, 3.0)
             network.interconnect_bidirectional()
         else:
             if nw_type == "ER":
                 network = nx.erdos_renyi_graph(nr_nodes, (self.average_degree / nr_nodes))
             elif nw_type == "RR":
                 network = nx.random_regular_graph(self.average_degree, nr_nodes)
-            elif nw_type == "SF":
-                network = nx.barabasi_albert_graph(nr_nodes, 2)
+            elif nw_type == "SF_2.3":
+                network = ScaleFree(nr_nodes, 2.3, True).graph_1
+            elif nw_type == "SF_2.7":
+                network = ScaleFree(nr_nodes, 2.7, True).graph_1
+            elif nw_type == "SF_3.0":
+                network = ScaleFree(nr_nodes, 3.0, True).graph_1
 
         if network is not None and inter:
             if self.bidir:
@@ -227,7 +236,9 @@ class Simulator:
         # 1. Create Networks
         self.names_part2.append("ER")
         self.names_part2.append("RR")
-        self.names_part2.append("SF")
+        self.names_part2.append("SF_2.3")
+        self.names_part2.append("SF_2.7")
+        self.names_part2.append("SF_3.0")
 
         start_time = time.time()
         for nw_type in self.nw_types:
@@ -250,7 +261,9 @@ class Simulator:
         # 1. Create Networks
         self.names_part2.append("ER")
         self.names_part2.append("RR")
-        self.names_part2.append("SF")
+        self.names_part2.append("SF_2.3")
+        self.names_part2.append("SF_2.7")
+        self.names_part2.append("SF_3.0")
 
         start_time = time.time()
         for nw_type in self.nw_types:
