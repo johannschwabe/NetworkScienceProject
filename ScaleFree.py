@@ -1,8 +1,8 @@
-from InterdependantNetwork import InterdependantNetwork
+from InterdependentNetwork import InterdependentNetwork
 import networkx as nx
 
 
-class ScaleFree(InterdependantNetwork):
+class ScaleFree(InterdependentNetwork):
     def __init__(self, nr_nodes):
         super().__init__(nr_nodes)
 
@@ -11,4 +11,3 @@ class ScaleFree(InterdependantNetwork):
 
     def __str__(self):
         return f"Scale Free"
-

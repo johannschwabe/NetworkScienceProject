@@ -1,26 +1,30 @@
-import matplotlib.pyplot as plt
 import os
+import random
+import time
+
+import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
+import pandas as pd
+
 from ER import ER
 from RandomRegular import RandomRegular
 from ScaleFree import ScaleFree
-import numpy as np
-import networkx as nx
-import random
-import time
-import pandas as pd
 
 
 class Simulator:
 
     def __init__(self, nr_created_networks, nr_runs_per_network, range_start, range_end, range_nr_steps, bidir):
         # General parameters
-        self.nr_created_networks = nr_created_networks  # defines how often the step of creating a network should be repeated
-        self.nr_runs_per_network = nr_runs_per_network  # defines how often the killing should be repeated
+        # defines how often the step of creating a network should be repeated
+        self.nr_created_networks = nr_created_networks
+        # defines how often the killing should be repeated
+        self.nr_runs_per_network = nr_runs_per_network
         self.average_degree = 4
-        self.remaining_nodes_options = np.linspace(range_start, range_end, range_nr_steps)  # start point (0 = 0%), end point (1 = 100%) and number
+        # start point (0 = 0%), end point (1 = 100%) and number of steps
+        self.remaining_nodes_options = np.linspace(range_start, range_end, range_nr_steps)
         self.bidir = bidir
         # of steps to generate plt 2
-
 
         # Networks analysis params
         self.nw_types = ["ER", "RR", "SF"]
@@ -94,29 +98,34 @@ class Simulator:
 
         return p_infinities
 
-    def plot_pk_infinity(self, p_infinities_nw, title):
-        print(p_infinities_nw)
+    def plot_pk_infinity(self, p_infinities_nw, title, nw_type_for_path="network"):
+        plt.rcParams["figure.figsize"] = (6, 4)
         plt.figure()
         for p_infinities in p_infinities_nw:
             plt.plot(self.psk, p_infinities)
             plt.xlabel("p<k>")
             plt.ylabel("P Infinity")
-        plt.title(title)
+
+        plt.title(title, fontsize=9)
         plt.legend(self.ns)
         directory = os.path.dirname(__file__)
-        path = os.path.join(directory, 'figures', str(title) + "_bidir_" + str(self.bidir) + ".png")
+        path = os.path.join(directory, 'figures',
+                            nw_type_for_path + "Bidir" + str(self.bidir) + str(time.time()) + "_bidir_" + str(self.bidir) + ".png")
         plt.savefig(path)
 
-    def plot_p_infinity(self, p_infinities_nw, title):
+    def plot_p_infinity(self, p_infinities_nw, title, nw_type_for_path="network"):
+        plt.rcParams["figure.figsize"] = (6, 4)
         plt.figure()
         for p_infinities in p_infinities_nw:
             plt.plot(self.remaining_nodes_options, p_infinities)
             plt.xlabel("p")
             plt.ylabel("P Infinity")
-        plt.title(title)
+
+        plt.title(title, fontsize=9)
         plt.legend(self.names_part2)
         directory = os.path.dirname(__file__)
-        path = os.path.join(directory, 'figures', str(title) + "_bidir_" + str(self.bidir) + ".png")
+        path = os.path.join(directory, 'figures',
+                            nw_type_for_path + "Bidir" + str(self.bidir) + str(time.time()) + "_bidir_" + str(self.bidir) + ".png")
         plt.savefig(path)
 
     def analyse_inter_er_augmenting_n(self, er_start_n, er_nr_steps):
@@ -149,10 +158,11 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 3. Draw scatter plot
-        self.plot_pk_infinity(list(self.p_infinities_inter_er), f"Comparison interdependent ER with different N \ner_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
+        self.plot_pk_infinity(list(self.p_infinities_inter_er),
+                              f"Comparison interdependent ER with different N \ner_start_n: {er_start_n}, er_nr_steps: "
+                              f"{er_nr_steps}", "inter")
 
     def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
-
         # Ns from paper 1000, 2000, 4000 ... 64 000
         self.ns = []
         for i in range(er_nr_steps):
@@ -177,25 +187,43 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 4. Draw scatter plot
-        self.plot_pk_infinity(self.p_infinities_reg_er, f"Comparison regular ER with different N er_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
+        self.plot_pk_infinity(self.p_infinities_reg_er,
+                              f"Comparison regular ER with different N er_start_n: {er_start_n}, er_nr_steps: "
+                              f"{er_nr_steps}", "reg")
 
-    def compare_inter_reg_er(self):
-        for p_inf_inter_er, p_inf_reg_er, name, n in zip(self.p_infinities_inter_er, self.p_infinities_reg_er,
-                                                         self.er_inter_names, self.ns):
+    @staticmethod
+    def compare_inter_reg_er(path_inter="", path_reg=""):
+        directory = os.path.dirname(__file__)
+        path = os.path.join(directory, 'results')
+
+        if not path_inter:
+            path_inter = os.path.join(path, [f for f in os.listdir(path) if "InterEr" in f][0])
+
+        if not path_reg:
+            path_reg = os.path.join(path, [f for f in os.listdir(path) if "RegEr" in f][0])
+
+        inter_df = pd.read_csv(path_inter)
+        reg_df = pd.read_csv(path_reg)
+        ns = inter_df.columns.values.tolist()
+        ns.remove("Unnamed: 0")
+        ns.remove("psk")
+
+        for p_inf_inter_er, p_inf_reg_er, n in zip(inter_df.loc[:, ~inter_df.columns.isin(['Unnamed: 0', 'psk'])],
+                                                   reg_df.loc[:, ~reg_df.columns.isin(['Unnamed: 0', 'psk'])],
+                                                   ns):
             plt.figure()
-            plt.plot(self.psk, p_inf_inter_er, color='red')
-            plt.plot(self.psk, p_inf_reg_er, color='blue')
+            plt.plot(inter_df["psk"], inter_df[p_inf_inter_er], color='red')
+            plt.plot(inter_df["psk"], reg_df[p_inf_reg_er], color='blue')
             plt.xlabel("p<k>")
             plt.ylabel("P Infinity")
             labels = ["interdependent", "regular"]
             plt.legend(labels)
-            plt.title("Comparison Interdependent vs. Regular ER network for N = " + str(n))
+            plt.title("Comparison Interdependent vs. Regular ER network for N = " + str(n), fontsize=9)
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', str(name) + ".png")
+            path = os.path.join(directory, 'figures', "compareErInterReg" + str(n) + str(time.time()) + ".png")
             plt.savefig(path)
 
     def analyse_inter_networks_augmenting_n(self, nr_nodes):
-
         # 1. Create Networks
         self.names_part2.append("ER")
         self.names_part2.append("RR")
@@ -215,7 +243,8 @@ class Simulator:
                 n_p_infinities.append(p_infinities)
             self.p_infinities_inter_part2.append(np.array(n_p_infinities).mean(axis=0))
         # 3. plot
-        self.plot_p_infinity(self.p_infinities_inter_part2, f"Comparison Interdependent Networks nr_nodes: {nr_nodes}")
+        self.plot_p_infinity(self.p_infinities_inter_part2, f"Comparison Interdependent Networks with {nr_nodes} Nodes",
+                             "inter")
 
     def analyse_reg_networks_augmenting_n(self, nr_nodes):
         # 1. Create Networks
@@ -237,9 +266,74 @@ class Simulator:
                 n_p_infinities.append(p_infinities)
             self.p_infinities_reg_part2.append(np.array(n_p_infinities).mean(axis=0))
         # 3. plot
-        self.plot_p_infinity(self.p_infinities_reg_part2, f"Comparison Regular Networks nr_nodes: {nr_nodes}")
+        self.plot_p_infinity(self.p_infinities_reg_part2, f"Comparison Regular Networks with {nr_nodes} Nodes", "reg")
 
-    def compare_inter_reg_part2(self):
+    @staticmethod
+    def compare_inter_reg_part2(path_inter="", path_reg=""):
+        directory = os.path.dirname(__file__)
+        path = os.path.join(directory, 'results')
+
+        if not path_inter:
+            path_inter = os.path.join(path, [f for f in os.listdir(path) if "InterNetworks" in f][0])
+
+        if not path_reg:
+            path_reg = os.path.join(path, [f for f in os.listdir(path) if "RegNetworks" in f][0])
+
+        inter_df = pd.read_csv(path_inter)
+        reg_df = pd.read_csv(path_reg)
+        names = inter_df.columns.values.tolist()
+        names.remove("Unnamed: 0")
+        names.remove("ps")
+
+        for p_inf_inter, p_inf_reg, name in zip(inter_df.loc[:, ~inter_df.columns.isin(['Unnamed: 0', 'ps'])],
+                                                reg_df.loc[:, ~reg_df.columns.isin(['Unnamed: 0', 'ps'])],
+                                                names):
+            plt.figure()
+            plt.plot(inter_df["ps"], inter_df[p_inf_inter], color='red')
+            plt.plot(inter_df["ps"], reg_df[p_inf_reg], color='blue')
+            plt.xlabel("p")
+            plt.ylabel("P Infinity")
+            labels = ["interdependent", "regular"]
+            plt.legend(labels)
+            plt.title("Comparison Interdependent vs. Regular {} Network".format(name), fontsize=9)
+            directory = os.path.dirname(__file__)
+            path = os.path.join(directory, 'figures', "compareNetworksInterReg" + str(name) + str(time.time()) + ".png")
+            plt.savefig(path)
+
+    def save_results(self, name):
+        directory = os.path.dirname(__file__)
+
+        if len(self.p_infinities_inter_er) > 0:
+            path = os.path.join(directory, 'results',
+                                "resultsInterErBidir" + str(self.bidir) + str(time.time()) + ".csv")
+            p_infinities = np.array(self.p_infinities_inter_er).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.ns)
+            results['psk'] = self.psk
+            results.to_csv(path)
+
+        if len(self.p_infinities_reg_er) > 0:
+            path = os.path.join(directory, 'results', "resultsRegErBidir" + str(self.bidir) + str(time.time()) + ".csv")
+            p_infinities = np.array(self.p_infinities_reg_er).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.ns)
+            results['psk'] = self.psk
+            results.to_csv(path)
+
+        if len(self.p_infinities_inter_part2) > 0:
+            path = os.path.join(directory, 'results',
+                                "resultsInterNetworksBidir" + str(self.bidir) + str(time.time()) + ".csv")
+            p_infinities = np.array(self.p_infinities_inter_part2).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.nw_types)
+            results['ps'] = self.remaining_nodes_options
+            results.to_csv(path)
+
+        if len(self.p_infinities_reg_part2) > 0:
+            path = os.path.join(directory, 'results',
+                                "resultsRegNetworksBidir" + str(self.bidir) + str(time.time()) + ".csv")
+            p_infinities = np.array(self.p_infinities_reg_part2).transpose()
+            results = pd.DataFrame(p_infinities, columns=self.nw_types)
+            results['ps'] = self.remaining_nodes_options
+            results.to_csv(path)
+
         for p_inf_inter, p_inf_reg, name in zip(self.p_infinities_inter_part2, self.p_infinities_reg_part2,
                                                 self.names_part2):
             plt.figure()
@@ -249,38 +343,39 @@ class Simulator:
             plt.ylabel("P Infinity")
             labels = ["interdependent", "regular"]
             plt.legend(labels)
-            plt.title("Comparison Interdependent vs. Regular {} Network".format(name))
+            plt.title("Comparison Interdependent vs. Regular {} Networks".format(name))
             directory = os.path.dirname(__file__)
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def save_results(self, name):
+    @staticmethod
+    def compare_uni_bi_networks(path_uni="", path_bi=""):
         directory = os.path.dirname(__file__)
+        path = os.path.join(directory, 'results')
 
-        if len(self.p_infinities_inter_er) > 0:
-            path = os.path.join(directory, 'results', f"results_inter_er_{name}.csv")
-            p_infinities = np.array(self.p_infinities_inter_er).transpose()
-            results = pd.DataFrame(p_infinities, columns=self.ns)
-            results['psk'] = self.psk
-            results.to_csv(path)
+        if not path_uni:
+            path_uni = os.path.join(path, [f for f in os.listdir(path) if "NetworksBidirFalse" in f][0])
 
-        if len(self.p_infinities_reg_er) > 0:
-            path = os.path.join(directory, 'results', f"results_reg_er_{name}.csv")
-            p_infinities = np.array(self.p_infinities_reg_er).transpose()
-            results = pd.DataFrame(p_infinities, columns=self.ns)
-            results['psk'] = self.psk
-            results.to_csv(path)
+        if not path_bi:
+            path_bi = os.path.join(path, [f for f in os.listdir(path) if "NetworksBidirTrue" in f][0])
 
-        if len(self.p_infinities_inter_part2) > 0:
-            path = os.path.join(directory, 'results', f"results_inter_networks_{name}.csv")
-            p_infinities = np.array(self.p_infinities_inter_part2).transpose()
-            results = pd.DataFrame(p_infinities, columns=self.nw_types)
-            results['psk'] = self.remaining_nodes_options
-            results.to_csv(path)
+        uni_df = pd.read_csv(path_uni)
+        bi_df = pd.read_csv(path_bi)
+        names = uni_df.columns.values.tolist()
+        names.remove("Unnamed: 0")
+        names.remove("ps")
 
-        if len(self.p_infinities_reg_part2) > 0:
-            path = os.path.join(directory, 'results', f"results_reg_networks_{name}.csv")
-            p_infinities = np.array(self.p_infinities_reg_part2).transpose()
-            results = pd.DataFrame(p_infinities, columns=self.nw_types)
-            results['psk'] = self.remaining_nodes_options
-            results.to_csv(path)
+        for p_inf_uni, p_inf_bi, name in zip(uni_df.loc[:, ~uni_df.columns.isin(['Unnamed: 0', 'ps'])],
+                                             bi_df.loc[:, ~bi_df.columns.isin(['Unnamed: 0', 'ps'])],
+                                             names):
+            plt.figure()
+            plt.plot(uni_df["ps"], uni_df[p_inf_uni], color='red')
+            plt.plot(uni_df["ps"], bi_df[p_inf_bi], color='blue')
+            plt.xlabel("p")
+            plt.ylabel("P Infinity")
+            labels = ["unidirectional", "bidirectional"]
+            plt.legend(labels)
+            plt.title("Comparison Unidirectional vs. Bidirectional {} Networks".format(name), fontsize=9)
+            directory = os.path.dirname(__file__)
+            path = os.path.join(directory, 'figures', "compareNetworksUniBi" + str(name) + str(time.time()) + ".png")
+            plt.savefig(path)
