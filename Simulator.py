@@ -104,7 +104,7 @@ class Simulator:
         plt.title(title)
         plt.legend(self.ns)
         directory = os.path.dirname(__file__)
-        path = os.path.join(directory, 'figures', str(title) + ".png")
+        path = os.path.join(directory, 'figures', str(title) + "_bidir_" + str(self.bidir) + ".png")
         plt.savefig(path)
 
     def plot_p_infinity(self, p_infinities_nw, title):
@@ -116,7 +116,7 @@ class Simulator:
         plt.title(title)
         plt.legend(self.names_part2)
         directory = os.path.dirname(__file__)
-        path = os.path.join(directory, 'figures', str(title) + ".png")
+        path = os.path.join(directory, 'figures', str(title) + "_bidir_" + str(self.bidir) + ".png")
         plt.savefig(path)
 
     def analyse_inter_er_augmenting_n(self, er_start_n, er_nr_steps):
@@ -149,7 +149,7 @@ class Simulator:
         self.psk = [element * self.average_degree for element in self.remaining_nodes_options]
 
         # 3. Draw scatter plot
-        self.plot_pk_infinity(list(self.p_infinities_inter_er), f"Comparison interdependent ER with different N er_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
+        self.plot_pk_infinity(list(self.p_infinities_inter_er), f"Comparison interdependent ER with different N \ner_start_n: {er_start_n}, er_nr_steps {er_nr_steps}")
 
     def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
 
@@ -254,32 +254,32 @@ class Simulator:
             path = os.path.join(directory, 'figures', str(name) + ".png")
             plt.savefig(path)
 
-    def save_results(self):
+    def save_results(self, name):
         directory = os.path.dirname(__file__)
 
         if len(self.p_infinities_inter_er) > 0:
-            path = os.path.join(directory, 'results', "results_inter_er.csv")
+            path = os.path.join(directory, 'results', f"results_inter_er_{name}.csv")
             p_infinities = np.array(self.p_infinities_inter_er).transpose()
             results = pd.DataFrame(p_infinities, columns=self.ns)
             results['psk'] = self.psk
             results.to_csv(path)
 
         if len(self.p_infinities_reg_er) > 0:
-            path = os.path.join(directory, 'results', "results_reg_er.csv")
+            path = os.path.join(directory, 'results', f"results_reg_er_{name}.csv")
             p_infinities = np.array(self.p_infinities_reg_er).transpose()
             results = pd.DataFrame(p_infinities, columns=self.ns)
             results['psk'] = self.psk
             results.to_csv(path)
 
         if len(self.p_infinities_inter_part2) > 0:
-            path = os.path.join(directory, 'results', "results_inter_networks.csv")
+            path = os.path.join(directory, 'results', f"results_inter_networks_{name}.csv")
             p_infinities = np.array(self.p_infinities_inter_part2).transpose()
             results = pd.DataFrame(p_infinities, columns=self.nw_types)
             results['psk'] = self.remaining_nodes_options
             results.to_csv(path)
 
         if len(self.p_infinities_reg_part2) > 0:
-            path = os.path.join(directory, 'results', "results_reg_networks.csv")
+            path = os.path.join(directory, 'results', f"results_reg_networks_{name}.csv")
             p_infinities = np.array(self.p_infinities_reg_part2).transpose()
             results = pd.DataFrame(p_infinities, columns=self.nw_types)
             results['psk'] = self.remaining_nodes_options

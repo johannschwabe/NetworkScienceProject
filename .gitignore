@@ -133,3 +133,5 @@ dmypy.json
 /ex1.txt
 /ex2.txt
 /results/
+/figures/
+*.zip

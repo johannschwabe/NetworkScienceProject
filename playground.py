@@ -24,4 +24,4 @@ else:
     sim.analyse_inter_networks_augmenting_n(nr_nodes)
     sim.analyse_reg_networks_augmenting_n(nr_nodes)
 
-sim.save_results()
+sim.save_results(",".join(sys.argv))
