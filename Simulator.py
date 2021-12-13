@@ -108,11 +108,16 @@ class Simulator:
 
         return p_infinities
 
-    def plot_pk_infinity(self, p_infinities_nw, title, bidir, nw_type_for_path="network"):
+    def plot_pk_infinity(self, p_infinities_nw, title, bidir, reg, nw_type_for_path="network"):
         plt.rcParams["figure.figsize"] = (6, 4)
         plt.figure()
         for p_infinities in p_infinities_nw:
-            plt.plot(self.psk_bidir, p_infinities) if bidir else plt.plot(self.psk_unidir, p_infinities)
+            if reg:
+                plt.plot(self.psk_reg, p_infinities)
+            elif bidir:
+                plt.plot(self.psk_bidir, p_infinities)
+            else:
+                plt.plot(self.psk_unidir, p_infinities)
             plt.xlabel("p<k>")
             plt.ylabel("P Infinity")
 
