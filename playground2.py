@@ -22,5 +22,3 @@ sim.analyse_reg_er_augmenting_n(er_start_n, er_nr_steps)
 # sim.analyse_inter_networks_augmenting_n(nr_nodes, True)
 # sim.analyse_inter_networks_augmenting_n(nr_nodes, False)
 # sim.analyse_reg_networks_augmenting_n(nr_nodes)
-
-sim.save_results()

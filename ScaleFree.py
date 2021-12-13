@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from InterdependentNetwork import InterdependentNetwork
@@ -15,7 +14,7 @@ class ScaleFree(InterdependentNetwork):
         sequence_1 = self.distribution(_lambda, nr_nodes)
         if sum(sequence_1) % 2 == 1:
             sequence_1[0] += 1
-        self.graph_1 = nx.random_reference(nx.configuration_model(sequence_1, create_using=nx.Graph))
+        self.graph_1 = nx.configuration_model(sequence_1, create_using=nx.Graph)
 
         if regular:
             return
@@ -23,7 +22,7 @@ class ScaleFree(InterdependentNetwork):
         sequence_2 = self.distribution(_lambda, nr_nodes)
         if sum(sequence_2) % 2 == 1:
             sequence_2[0] += 1
-        self.graph_2 = nx.random_reference(nx.configuration_model(sequence_2, create_using=nx.Graph))
+        self.graph_2 = nx.configuration_model(sequence_2, create_using=nx.Graph)
 
     def __str__(self):
         return f"Scale Free"
