@@ -132,8 +132,7 @@ dmypy.json
 
 
 *.png
-/ex1.txt
-/ex2.txt
+/ex*.txt
 /results/
 /figures/
 *.zip
