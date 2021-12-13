@@ -181,6 +181,7 @@ class Simulator:
                                   f"{er_start_n}, er_nr_steps: "
                                   f"{er_nr_steps}",
                                   bidir,
+                                  False,
                                   "ERInter")
         else:
             # 2.2 make ps to psk
@@ -192,6 +193,7 @@ class Simulator:
                                   f"{er_start_n}, er_nr_steps: "
                                   f"{er_nr_steps}",
                                   bidir,
+                                  False,
                                   "ERInter")
 
     def analyse_reg_er_augmenting_n(self, er_start_n, er_nr_steps):
@@ -221,6 +223,7 @@ class Simulator:
         self.plot_pk_infinity(self.p_infinities_reg_er,
                               f"Comparison regular ER with different N er_start_n: {er_start_n}, er_nr_steps: "
                               f"{er_nr_steps}",
+                              True,
                               True,
                               "ERReg")
 
