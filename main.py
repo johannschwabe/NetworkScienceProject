@@ -1,8 +1,8 @@
 from Simulator import Simulator
 import sys
 
-if len(sys.argv) != 9:
-    raise Exception(f"Wrong number of arguments. {len(sys.argv)} / 9")
+if len(sys.argv) != 10:
+    raise Exception(f"Wrong number of arguments. {len(sys.argv) - 1} / 9")
 nr_created_networks = int(sys.argv[1])
 nr_runs_per_network = int(sys.argv[2])
 range_start = float(sys.argv[3])
