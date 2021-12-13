@@ -1,14 +1,14 @@
 from Simulator import Simulator
 
-nr_created_networks = 2
-nr_runs_per_network = 2
+nr_created_networks = 1
+nr_runs_per_network = 1
 range_start = 0.1
 range_end = 1.0
-range_steps = 46
+range_steps = 10
 
 nr_nodes = 500
 
-er_start_n = 10
+er_start_n = 100
 er_nr_steps = 5
 
 sim = Simulator(nr_created_networks, nr_runs_per_network, range_start, range_end, range_steps)

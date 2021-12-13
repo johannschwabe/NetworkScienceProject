@@ -1,7 +1,7 @@
 # ER
-nohup python3 main.py 10 2 0.55 0.65 20 1000 5 0 1 > ex1.txt &
-nohup python3 main.py 10 2 0.55 0.9 20 1000 5 0 2 > ex2.txt &
-nohup python3 main.py 10 2 0.1 0.55 20 1000 5 0 3 > ex3.txt &
+nohup python3 main.py 10 2 0.55 0.65 20 1000 7 0 1 > ex1.txt &
+nohup python3 main.py 10 2 0.55 0.9 20 1000 7 0 2 > ex2.txt &
+nohup python3 main.py 10 2 0.1 0.55 20 1000 7 0 3 > ex3.txt &
 
 # NS
 nohup python3 main.py 10 2 0.55 0.8 20 0 0 50000 4 > ex4.txt &

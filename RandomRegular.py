@@ -13,5 +13,8 @@ class RandomRegular(InterdependentNetwork):
 
         self.graph_2 = nx.random_regular_graph(deg, nr_nodes)
 
+        # print("Graph1 con:", nx.is_connected(self.graph_1), "deg:", np.average([deg[1] for deg in self.graph_1.degree]))
+        # print("Graph2 con:", nx.is_connected(self.graph_2), "deg:", np.average([deg[1] for deg in self.graph_2.degree]))
+
     def __str__(self):
         return "Random Regular"
