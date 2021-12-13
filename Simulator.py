@@ -125,7 +125,7 @@ class Simulator:
         plt.legend(self.ns)
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, 'figures',
-                            nw_type_for_path + ("Bidir" if bidir else "Unidir") + str(int(time.time())) + ".png")
+                            nw_type_for_path + ("Bidir" if bidir else "Unidir") + str(int(time.time()) - 1639300000) + ".png")
         plt.savefig(path)
 
     def plot_p_infinity(self, p_infinities_nw, title, bidir, nw_type_for_path="network"):
@@ -140,7 +140,7 @@ class Simulator:
         plt.legend(self.names_part2)
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, 'figures',
-                            nw_type_for_path + ("Bidir" if bidir else "Unidir") + str(int(time.time())) + ".png")
+                            nw_type_for_path + ("Bidir" if bidir else "Unidir") + str(int(time.time()) - 1639300000) + ".png")
         plt.savefig(path)
 
     def analyse_inter_er_augmenting_n(self, er_start_n, er_nr_steps, bidir):
@@ -295,7 +295,7 @@ class Simulator:
 
         if len(self.p_infinities_inter_unidir_er) > 0:
             path = os.path.join(directory, 'results',
-                                "resultsInterErUnidir" + str(int(time.time())) + ".csv")
+                                "resultsInterErUnidir" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_inter_unidir_er).transpose()
             results = pd.DataFrame(p_infinities, columns=self.ns)
             results['psk'] = self.psk_unidir
@@ -303,14 +303,14 @@ class Simulator:
 
         if len(self.p_infinities_inter_bidir_er) > 0:
             path = os.path.join(directory, 'results',
-                                "resultsInterErBidir" + str(int(time.time())) + ".csv")
+                                "resultsInterErBidir" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_inter_bidir_er).transpose()
             results = pd.DataFrame(p_infinities, columns=self.ns)
             results['psk'] = self.psk_bidir
             results.to_csv(path)
 
         if len(self.p_infinities_reg_er) > 0:
-            path = os.path.join(directory, 'results', "resultsRegEr" + str(int(time.time())) + ".csv")
+            path = os.path.join(directory, 'results', "resultsRegEr" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_reg_er).transpose()
             results = pd.DataFrame(p_infinities, columns=self.ns)
             results['psk'] = self.psk_reg
@@ -318,7 +318,7 @@ class Simulator:
 
         if len(self.p_infinities_inter_unidir_ns) > 0:
             path = os.path.join(directory, 'results',
-                                "resultsInterNetworksUnidir" + str(int(time.time())) + ".csv")
+                                "resultsInterNetworksUnidir" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_inter_unidir_ns).transpose()
             results = pd.DataFrame(p_infinities, columns=self.nw_types)
             results['ps'] = self.remaining_nodes_options
@@ -326,7 +326,7 @@ class Simulator:
 
         if len(self.p_infinities_inter_bidir_ns) > 0:
             path = os.path.join(directory, 'results',
-                                "resultsInterNetworksBidir" + str(int(time.time())) + ".csv")
+                                "resultsInterNetworksBidir" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_inter_bidir_ns).transpose()
             results = pd.DataFrame(p_infinities, columns=self.nw_types)
             results['ps'] = self.remaining_nodes_options
@@ -334,7 +334,7 @@ class Simulator:
 
         if len(self.p_infinities_reg_ns) > 0:
             path = os.path.join(directory, 'results',
-                                "resultsRegNetworks" + str(int(time.time())) + ".csv")
+                                "resultsRegNetworks" + str(int(time.time()) - 1639300000) + ".csv")
             p_infinities = np.array(self.p_infinities_reg_ns).transpose()
             results = pd.DataFrame(p_infinities, columns=self.nw_types)
             results['ps'] = self.remaining_nodes_options
@@ -354,7 +354,7 @@ class Simulator:
             plt.legend(labels)
             plt.title(f"Comparison Interdependent vs. Regular {name} Networks")
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', str(name) + str(int(time.time())) + ".png")
+            path = os.path.join(directory, 'figures', str(name) + str(int(time.time()) - 1639300000) + ".png")
             plt.savefig(path)
 
     @staticmethod
@@ -386,7 +386,7 @@ class Simulator:
             plt.legend(labels)
             plt.title("Comparison Interdependent vs. Regular ER network for N = " + str(n), fontsize=9)
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', "compareErInterReg" + str(n) + str(time.time()) + ".png")
+            path = os.path.join(directory, 'figures', "compareErInterReg" + str(n) + str(int(time.time()) - 1639300000) + ".png")
             plt.savefig(path)
 
     @staticmethod
@@ -418,7 +418,7 @@ class Simulator:
             plt.legend(labels)
             plt.title("Comparison Interdependent vs. Regular {} Network".format(name), fontsize=9)
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', "compareNetworksInterReg" + str(name) + str(time.time()) + ".png")
+            path = os.path.join(directory, 'figures', "compareNetworksInterReg" + str(name) + str(int(time.time()) - 1639300000) + ".png")
             plt.savefig(path)
 
     @staticmethod
@@ -450,5 +450,5 @@ class Simulator:
             plt.legend(labels)
             plt.title("Comparison Unidirectional vs. Bidirectional {} Networks".format(name), fontsize=9)
             directory = os.path.dirname(__file__)
-            path = os.path.join(directory, 'figures', "compareNetworksUniBi" + str(name) + str(time.time()) + ".png")
+            path = os.path.join(directory, 'figures', "compareNetworksUniBi" + str(name) + str(int(time.time()) - 1639300000) + ".png")
             plt.savefig(path)
