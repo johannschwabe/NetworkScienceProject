@@ -11,21 +11,19 @@ class ScaleFree(InterdependentNetwork):
 
     def __init__(self, nr_nodes, _lambda, regular=False):
         super().__init__(nr_nodes)
-        sequence_1 = self.distribution(_lambda, nr_nodes)
 
+        sequence_1 = self.distribution(_lambda, nr_nodes)
         if sum(sequence_1) % 2 == 1:
             sequence_1[0] += 1
+        self.graph_1 = nx.random_reference(nx.configuration_model(sequence_1, create_using=nx.Graph))
 
-        self.graph_1 = nx.configuration_model(sequence_1)
         if regular:
             return
-        sequence_2 = self.distribution(_lambda, nr_nodes)
 
+        sequence_2 = self.distribution(_lambda, nr_nodes)
         if sum(sequence_2) % 2 == 1:
             sequence_2[0] += 1
-        self.graph_2 = nx.configuration_model(sequence_2)
-        # self.graph_1 = nx.barabasi_albert_graph(nr_nodes, 2)
-        # self.graph_2 = nx.barabasi_albert_graph(nr_nodes, 2)
+        self.graph_2 = nx.random_reference(nx.configuration_model(sequence_2, create_using=nx.Graph))
 
     def __str__(self):
         return f"Scale Free"
