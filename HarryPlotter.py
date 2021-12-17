@@ -1,21 +1,25 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-file_path = "results/resultsInterErBidir272132.csv"
-# file_path = "results/resultsInterErUnidir98326.csv"
+# file_path = "results/resultsInterErBidir272132.csv"
+# file_path = "results/resultsInterErUnidir325310.csv"
 # file_path = "results/resultsRegEr146780.csv"
 # file_path = "results/resultsRegNetworks161350.csv"
+# file_path = "results/resultsInterNetworksBidir420601.csv"
+file_path = "results/resultsInterNetworksUnidir454271.csv"
 
-fig_path = "figures/BidirER"
+# fig_path = "figures/BidirER"
 # fig_path = "figures/UnidirER"
 # fig_path = "figures/RegER"
 # fig_path = "figures/RegNS"
+# fig_path = "figures/BidirNS"
+fig_path = "figures/UnidirNS"
 
-x_min = 2.36
-x_max = 2.5
+x_min = 0.5
+x_max = 0.9
 
-x_label = "p<k>"
-# x_label = "p"
+# x_label = "p<k>"
+x_label = "p"
 
 dataframe = pd.read_csv(file_path)
 
@@ -26,7 +30,10 @@ for col in dataframe.columns[1:-1]:
 plt.legend()
 
 # Title
-plt.title("Interdependent Bidirectional Erdos Renyi networks", fontsize=9)
+# plt.title("Interdependent Bidirectional Erdos Renyi networks", fontsize=9)
+# plt.title("Interdependent Bidirectional networks", fontsize=9)
+plt.title("Interdependent Unidirectional networks", fontsize=9)
+# plt.title("Interdependent Unidirectional Erdos Renyi networks", fontsize=9)
 # plt.title("Independent Erdos Renyi networks", fontsize=9)
 # plt.title("Independent networks", fontsize=9)
 

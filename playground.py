@@ -20,5 +20,5 @@ sim = Simulator(nr_created_networks, nr_runs_per_network, range_start, range_end
 
 # NS
 sim.analyse_inter_networks_augmenting_n(nr_nodes, True)
-sim.analyse_inter_networks_augmenting_n(nr_nodes, False)
-sim.analyse_reg_networks_augmenting_n(nr_nodes)
+# sim.analyse_inter_networks_augmenting_n(nr_nodes, False)
+# sim.analyse_reg_networks_augmenting_n(nr_nodes)
